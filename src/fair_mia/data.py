@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 import csv
-from collections import Counter
+import random
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Iterable
 import xml.etree.ElementTree as ET
@@ -149,14 +150,47 @@ def prepare_pan17_from_xml(
     test_dir: str | Path,
     output_dir: str | Path,
     lang: str = "en",
+    tokenizer_model_id: str = "EleutherAI/pythia-160m",
+    cache_dir: str | Path | None = None,
+    window_tokens: int = 256,
+    max_windows_per_bucket: int = 250,
+    seed: int = 0,
 ) -> tuple[Path, Path]:
+    if window_tokens <= 0:
+        raise ValueError("window_tokens must be positive.")
+    if max_windows_per_bucket <= 0:
+        raise ValueError("max_windows_per_bucket must be positive.")
+
     train_lang_dir = _resolve_pan17_lang_dir(train_dir, lang)
     test_lang_dir = _resolve_pan17_lang_dir(test_dir, lang)
     train_truth = _load_pan17_truth(train_lang_dir / "truth.txt")
     test_truth = _load_pan17_truth(test_lang_dir / "truth.txt")
+    tokenizer = _load_pan17_tokenizer(tokenizer_model_id, cache_dir)
 
-    members = _build_pan17_samples(train_lang_dir, train_truth, is_member=True)
-    nonmembers = _build_pan17_samples(test_lang_dir, test_truth, is_member=False)
+    members = _build_pan17_samples(
+        train_lang_dir,
+        train_truth,
+        tokenizer=tokenizer,
+        tokenizer_model_id=tokenizer_model_id,
+        lang=lang,
+        window_tokens=window_tokens,
+        is_member=True,
+    )
+    nonmembers = _build_pan17_samples(
+        test_lang_dir,
+        test_truth,
+        tokenizer=tokenizer,
+        tokenizer_model_id=tokenizer_model_id,
+        lang=lang,
+        window_tokens=window_tokens,
+        is_member=False,
+    )
+    members, nonmembers = _balance_pan17_samples(
+        members,
+        nonmembers,
+        max_windows_per_bucket=max_windows_per_bucket,
+        seed=seed,
+    )
     samples = members + nonmembers
     validate_samples(samples)
 
@@ -166,6 +200,20 @@ def prepare_pan17_from_xml(
     write_jsonl_samples(members, members_path)
     write_jsonl_samples(nonmembers, nonmembers_path)
     return members_path, nonmembers_path
+
+
+def _load_pan17_tokenizer(tokenizer_model_id: str, cache_dir: str | Path | None) -> object:
+    try:
+        from transformers import AutoTokenizer
+    except ImportError as exc:
+        raise RuntimeError(
+            "Install research dependencies before preparing PAN 2017 token windows: pip install -e .[research]"
+        ) from exc
+
+    kwargs = {}
+    if cache_dir is not None:
+        kwargs["cache_dir"] = str(cache_dir)
+    return AutoTokenizer.from_pretrained(tokenizer_model_id, **kwargs)
 
 
 def _resolve_pan17_lang_dir(base_dir: str | Path, lang: str) -> Path:
@@ -195,6 +243,10 @@ def _build_pan17_samples(
     directory: Path,
     truth: dict[str, dict[str, str]],
     *,
+    tokenizer: object,
+    tokenizer_model_id: str,
+    lang: str,
+    window_tokens: int,
     is_member: bool,
 ) -> list[TextSample]:
     samples: list[TextSample] = []
@@ -210,21 +262,19 @@ def _build_pan17_samples(
         else:
             continue
         text = _read_pan17_author_text(xml_path)
-        samples.append(
-            TextSample(
-                sample_id=author_id,
+        samples.extend(
+            _window_pan17_author_text(
+                author_id=author_id,
                 text=text,
-                is_member=is_member,
                 group=group,
-                scenario="finetuning",
-                metadata={
-                    "source": "pan17",
-                    "lang": "en",
-                    "original_group": gender,
-                    "variety": truth[author_id]["variety"],
-                    "split": "train" if is_member else "test",
-                    "documents_path": str(xml_path),
-                },
+                original_group=gender,
+                variety=truth[author_id]["variety"],
+                split="train" if is_member else "test",
+                lang=lang,
+                tokenizer=tokenizer,
+                tokenizer_model_id=tokenizer_model_id,
+                window_tokens=window_tokens,
+                is_member=is_member,
             )
         )
     return samples
@@ -236,6 +286,104 @@ def _read_pan17_author_text(path: str | Path) -> str:
     if not documents:
         raise ValueError(f"PAN 2017 XML has no non-empty documents: {path}")
     return "\n".join(documents)
+
+
+def _window_pan17_author_text(
+    *,
+    author_id: str,
+    text: str,
+    group: str,
+    original_group: str,
+    variety: str,
+    split: str,
+    lang: str,
+    tokenizer: object,
+    tokenizer_model_id: str,
+    window_tokens: int,
+    is_member: bool,
+) -> list[TextSample]:
+    encode = getattr(tokenizer, "encode", None)
+    decode = getattr(tokenizer, "decode", None)
+    if encode is None or decode is None:
+        raise ValueError("PAN 2017 tokenizer must provide encode() and decode().")
+
+    token_ids = list(encode(text, add_special_tokens=False))
+    samples: list[TextSample] = []
+    full_windows = len(token_ids) // window_tokens
+    for window_index in range(full_windows):
+        start = window_index * window_tokens
+        stop = start + window_tokens
+        window_ids = token_ids[start:stop]
+        window_text = str(decode(window_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)).strip()
+        if not window_text:
+            continue
+        samples.append(
+            TextSample(
+                sample_id=f"{author_id}:w{window_index}",
+                text=window_text,
+                is_member=is_member,
+                group=group,
+                scenario="finetuning",
+                metadata={
+                    "author_id": author_id,
+                    "window_index": window_index,
+                    "token_count": len(window_ids),
+                    "original_group": original_group,
+                    "variety": variety,
+                    "split": split,
+                    "source": "pan17",
+                    "lang": lang,
+                    "tokenizer_model_id": tokenizer_model_id,
+                },
+            )
+        )
+    return samples
+
+
+def _balance_pan17_samples(
+    members: list[TextSample],
+    nonmembers: list[TextSample],
+    *,
+    max_windows_per_bucket: int,
+    seed: int,
+) -> tuple[list[TextSample], list[TextSample]]:
+    buckets: dict[tuple[str, str, bool], list[TextSample]] = defaultdict(list)
+    for sample in members + nonmembers:
+        variety = str(sample.metadata.get("variety", "unknown"))
+        buckets[(sample.group, variety, sample.is_member)].append(sample)
+
+    rng = random.Random(seed)
+    balanced_members: list[TextSample] = []
+    balanced_nonmembers: list[TextSample] = []
+    surviving_varieties = sorted({variety for _, variety, _ in buckets})
+    for variety in surviving_varieties:
+        required_keys = [
+            ("G0", variety, True),
+            ("G0", variety, False),
+            ("G1", variety, True),
+            ("G1", variety, False),
+        ]
+        if any(not buckets[key] for key in required_keys):
+            continue
+        limit = min(len(buckets[key]) for key in required_keys)
+        limit = min(limit, max_windows_per_bucket)
+        if limit <= 0:
+            continue
+        for key in required_keys:
+            candidates = list(buckets[key])
+            rng.shuffle(candidates)
+            selected = candidates[:limit]
+            if key[2]:
+                balanced_members.extend(selected)
+            else:
+                balanced_nonmembers.extend(selected)
+
+    if not balanced_members or not balanced_nonmembers:
+        raise ValueError(
+            "PAN 2017 matching yielded no balanced group x variety x membership buckets with usable token windows."
+        )
+
+    return balanced_members, balanced_nonmembers
 
 
 def prepare_pile_sample(
@@ -304,9 +452,26 @@ def summarize_samples(samples: Iterable[TextSample]) -> dict[str, object]:
     by_group_membership = Counter(
         f"{sample.group}:{'member' if sample.is_member else 'nonmember'}" for sample in sample_list
     )
-    return {
+    varieties = {
+        str(sample.metadata.get("variety", "")).strip().lower()
+        for sample in sample_list
+        if str(sample.metadata.get("variety", "")).strip()
+    }
+    by_group_variety_membership = Counter(
+        f"{sample.group}:{str(sample.metadata.get('variety', 'unknown')).strip().lower()}:"
+        f"{'member' if sample.is_member else 'nonmember'}"
+        for sample in sample_list
+        if str(sample.metadata.get("variety", "")).strip()
+    )
+    group_membership_counts = [count for _, count in sorted(by_group_membership.items())]
+    summary = {
         "total": len(sample_list),
         "groups": dict(sorted(by_group.items())),
         "membership": dict(sorted(by_membership.items())),
         "group_membership": dict(sorted(by_group_membership.items())),
+        "is_four_cell_balanced": bool(group_membership_counts) and len(set(group_membership_counts)) == 1,
     }
+    if varieties:
+        summary["varieties"] = sorted(varieties)
+        summary["group_variety_membership"] = dict(sorted(by_group_variety_membership.items()))
+    return summary

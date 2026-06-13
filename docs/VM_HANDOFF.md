@@ -46,6 +46,12 @@ fair-mia prepare-pile-sample --output-dir data/pile_sample --max-members 500 --m
 
 PAN data may require manual access approval. Do not infer sensitive attributes from free text; use explicit metadata.
 
+For PAN 2017 English XML plus `truth.txt`, prepare balanced 256-token windows with:
+
+```powershell
+fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en --tokenizer-model-id EleutherAI/pythia-160m --window-tokens 256 --max-windows-per-bucket 250 --seed 0
+```
+
 ## Model Caching
 
 Download models only with explicit cache commands:
@@ -71,16 +77,10 @@ Real-model smoke run:
 fair-mia run --config configs/vm_smoke_pythia_160m.json
 ```
 
-RAG run:
-
-```powershell
-fair-mia run --config configs/vm_rag_local.json
-```
-
 LoRA fine-tuning:
 
 ```powershell
-fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 200 --epochs 1
+fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 1000 --epochs 2 --max-length 256 --seed 0
 fair-mia run --config configs/vm_finetune_lora_pythia_160m.json
 ```
 
@@ -106,4 +106,5 @@ Review `summary.csv` for `all`, `G0`, `G1`, and `gap:G0-G1` rows.
 - If model loading fails, run `cache-model` first and confirm `cache_dir` matches the config.
 - If CUDA is unavailable, start with `EleutherAI/pythia-160m`, lower sample counts, or use CPU only for smoke tests.
 - If PAN conversion fails, check that the CSV has text, group, and split columns and exactly two group values.
+- RAG runs are currently blocked until retrieved context is injected into model scoring.
 - Full Pile download is not required for this project; keep sample caps small until the pipeline is validated.

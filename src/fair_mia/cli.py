@@ -64,6 +64,11 @@ def build_parser() -> argparse.ArgumentParser:
     pan17_parser.add_argument("--test-dir", required=True, help="PAN 2017 test directory or its language subdirectory.")
     pan17_parser.add_argument("--output-dir", required=True)
     pan17_parser.add_argument("--lang", default="en")
+    pan17_parser.add_argument("--tokenizer-model-id", default="EleutherAI/pythia-160m")
+    pan17_parser.add_argument("--cache-dir")
+    pan17_parser.add_argument("--window-tokens", type=int, default=256)
+    pan17_parser.add_argument("--max-windows-per-bucket", type=int, default=250)
+    pan17_parser.add_argument("--seed", type=int, default=0)
 
     pile_parser = subparsers.add_parser("prepare-pile-sample", help="Stream a capped Pile sample into canonical JSONL.")
     pile_parser.add_argument("--output-dir", required=True)
@@ -81,6 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
     finetune_parser.add_argument("--epochs", type=int, default=1)
     finetune_parser.add_argument("--learning-rate", type=float, default=0.0002)
     finetune_parser.add_argument("--max-length", type=int, default=512)
+    finetune_parser.add_argument("--seed", type=int, default=0)
     return parser
 
 
@@ -94,6 +100,16 @@ def load_samples_from_config(config: BenchmarkConfig) -> list[TextSample]:
 
 def run_benchmark(config: BenchmarkConfig) -> Path:
     samples = load_samples_from_config(config)
+    if "rag" in config.scenarios:
+        raise NotImplementedError(RagScenarioRunner.UNSUPPORTED_MESSAGE)
+
+    sample_summary = summarize_samples(samples)
+    run_dir = prepare_run_dir(config.outputs_dir, config.run_id)
+    write_json(
+        _build_run_manifest_payload(config=config, sample_summary=sample_summary, status="running"),
+        run_dir / "run_manifest.json",
+    )
+
     attacks = get_attacks(config.attacks)
     if config.model.backend == "hf":
         target_model = HuggingFaceCausalLMAdapter(
@@ -146,24 +162,71 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
             scenario_registry[scenario_name].run(samples, attacks, target_model, reference_model, defense)
         )
 
-    run_dir = prepare_run_dir(config.outputs_dir, config.run_id)
     write_results_jsonl(records, run_dir / "results.jsonl")
     write_summary_csv(records, run_dir / "summary.csv")
-    write_json(build_overlap_report(samples), run_dir / "overlap_report.json")
     write_json(
-        {
-            "run_id": config.run_id,
-            "version": __version__,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "seed": config.seed,
-            "attacks": config.attacks,
-            "scenarios": config.scenarios,
-            "sample_summary": summarize_samples(samples),
-            "config": config.raw,
-        },
+        _build_run_manifest_payload(config=config, sample_summary=sample_summary, status="scored"),
+        run_dir / "run_manifest.json",
+    )
+
+    overlap_status = "disabled" if not config.overlap.enabled else "complete"
+    try:
+        overlap_report = build_overlap_report(
+            samples,
+            enabled=config.overlap.enabled,
+            max_nonmembers=config.overlap.max_nonmembers,
+            max_members_per_nonmember=config.overlap.max_members_per_nonmember,
+            n_values=config.overlap.n_values,
+            threshold=config.overlap.threshold,
+        )
+        overlap_status = str(overlap_report.get("status", overlap_status))
+    except Exception as exc:
+        overlap_status = "failed"
+        overlap_report = {
+            "status": "failed",
+            "error": str(exc),
+            "member_count": sample_summary["membership"].get("member", 0),
+            "nonmember_count": sample_summary["membership"].get("nonmember", 0),
+            "sampled": False,
+            "evaluated_nonmembers": 0,
+            "evaluated_members_per_nonmember": 0,
+            "total_pairs_evaluated": 0,
+            "n_grams": {},
+        }
+    write_json(overlap_report, run_dir / "overlap_report.json")
+    write_json(
+        _build_run_manifest_payload(
+            config=config,
+            sample_summary=sample_summary,
+            status="complete" if overlap_status != "failed" else "complete_with_overlap_failure",
+            overlap_status=overlap_status,
+        ),
         run_dir / "run_manifest.json",
     )
     return run_dir
+
+
+def _build_run_manifest_payload(
+    *,
+    config: BenchmarkConfig,
+    sample_summary: dict[str, object],
+    status: str,
+    overlap_status: str | None = None,
+) -> dict[str, object]:
+    payload = {
+        "run_id": config.run_id,
+        "version": __version__,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "seed": config.seed,
+        "status": status,
+        "attacks": config.attacks,
+        "scenarios": config.scenarios,
+        "sample_summary": sample_summary,
+        "config": config.raw,
+    }
+    if overlap_status is not None:
+        payload["overlap_status"] = overlap_status
+    return payload
 
 
 def cmd_list_attacks() -> int:
@@ -247,6 +310,11 @@ def cmd_prepare_pan17_xml(args: argparse.Namespace) -> int:
         test_dir=args.test_dir,
         output_dir=args.output_dir,
         lang=args.lang,
+        tokenizer_model_id=args.tokenizer_model_id,
+        cache_dir=args.cache_dir,
+        window_tokens=args.window_tokens,
+        max_windows_per_bucket=args.max_windows_per_bucket,
+        seed=args.seed,
     )
     print(f"Wrote {members_path}")
     print(f"Wrote {nonmembers_path}")
@@ -265,6 +333,7 @@ def cmd_finetune_lora(args: argparse.Namespace) -> int:
         epochs=args.epochs,
         learning_rate=args.learning_rate,
         max_length=args.max_length,
+        seed=args.seed,
     )
     print(f"Wrote LoRA adapter to {args.output_dir}")
     return 0

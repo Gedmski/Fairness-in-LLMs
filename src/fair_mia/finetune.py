@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import random
+from collections import defaultdict
 from pathlib import Path
+
+from fair_mia.types import TextSample
 
 
 def finetune_lora(
@@ -15,6 +19,7 @@ def finetune_lora(
     epochs: int = 1,
     learning_rate: float = 2e-4,
     max_length: int = 512,
+    seed: int = 0,
 ) -> None:
     try:
         import torch
@@ -25,7 +30,11 @@ def finetune_lora(
 
     from fair_mia.data import load_jsonl_samples
 
-    samples = load_jsonl_samples(train_jsonl, is_member=True, default_scenario="finetuning")[:max_train_samples]
+    samples = _select_stratified_training_samples(
+        load_jsonl_samples(train_jsonl, is_member=True, default_scenario="finetuning"),
+        max_train_samples=max_train_samples,
+        seed=seed,
+    )
     tokenizer = AutoTokenizer.from_pretrained(base_model_id, cache_dir=str(cache_dir) if cache_dir else None)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -73,9 +82,48 @@ def finetune_lora(
         logging_steps=10,
         save_strategy="epoch",
         report_to=[],
+        seed=seed,
+        data_seed=seed,
     )
     trainer = Trainer(model=model, args=args, train_dataset=TextDataset())
     trainer.train()
     merged_model = model.merge_and_unload() if hasattr(model, "merge_and_unload") else model
     merged_model.save_pretrained(str(output_dir))
     tokenizer.save_pretrained(str(output_dir))
+
+
+def _select_stratified_training_samples(
+    samples: list[TextSample],
+    *,
+    max_train_samples: int,
+    seed: int,
+) -> list[TextSample]:
+    if max_train_samples <= 0:
+        return []
+
+    buckets: dict[tuple[str, str], list[TextSample]] = defaultdict(list)
+    for sample in samples:
+        variety = str(sample.metadata.get("variety", "unknown")).strip().lower() or "unknown"
+        buckets[(sample.group, variety)].append(sample)
+
+    rng = random.Random(seed)
+    active_keys = sorted(buckets)
+    for key in active_keys:
+        rng.shuffle(buckets[key])
+
+    selected: list[TextSample] = []
+    remaining = {key: list(values) for key, values in buckets.items()}
+    while active_keys and len(selected) < min(max_train_samples, len(samples)):
+        next_active: list[tuple[str, str]] = []
+        for key in active_keys:
+            bucket = remaining[key]
+            if not bucket:
+                continue
+            selected.append(bucket.pop())
+            if bucket:
+                next_active.append(key)
+            if len(selected) >= min(max_train_samples, len(samples)):
+                break
+        active_keys = next_active
+
+    return selected

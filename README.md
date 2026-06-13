@@ -4,7 +4,7 @@ Fair MIA is a research benchmark for auditing membership inference attack (MIA) 
 
 - **Pre-training style evaluation** on open causal LMs such as Pythia
 - **Fine-tuning / instruction-tuning** on smaller demographic or domain datasets
-- **Retrieval-augmented generation (RAG)** where leakage can come from retrieved context
+- **Retrieval-augmented generation (RAG)** where leakage can come from retrieved context, once context-conditioned scoring is implemented
 
 The project keeps the offline scaffold runnable without model downloads, while providing VM-ready commands for real Hugging Face models and user-provided datasets.
 
@@ -14,7 +14,8 @@ Implemented:
 
 - Canonical JSONL dataset pipeline with strict `G0`/`G1` binary group validation
 - Five baseline attacks: `loss`, `reference`, `zlib`, `min_k`, and `neighborhood`
-- Scenario runners for `pretraining`, `finetuning`, and `rag`
+- Scenario runners for `pretraining` and `finetuning`
+- Explicit RAG safety error until context-conditioned scoring is implemented
 - Offline fake model adapter for local validation
 - Lazy Hugging Face causal LM adapter for VM runs
 - Explicit model caching command so benchmark runs do not download models unexpectedly
@@ -94,10 +95,10 @@ The converter maps the two observed group values to `G0` and `G1`. Use `--group0
 PAN 2017 author-profiling releases are often distributed as per-author XML files plus `truth.txt` instead of a flat CSV. Use the dedicated converter for that layout:
 
 ```powershell
-fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en
+fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en --tokenizer-model-id EleutherAI/pythia-160m --window-tokens 256 --max-windows-per-bucket 250 --seed 0
 ```
 
-This converter treats the training authors as members, the test authors as non-members, joins each author's XML documents into one text field, and maps `female -> G0` and `male -> G1`.
+This converter treats the training authors as members, the test authors as non-members, creates exact model-token windows, balances by `group x variety x membership`, and maps `female -> G0` and `male -> G1`.
 
 ### Capped Pile Sample
 
@@ -141,22 +142,16 @@ Real-model smoke run after preparing `data/pan_demo` and caching `pythia-160m`:
 fair-mia run --config configs/vm_smoke_pythia_160m.json
 ```
 
-Local RAG run:
-
-```powershell
-fair-mia run --config configs/vm_rag_local.json
-```
-
 Main Pythia mechanics run after preparing `data/pile_sample` and caching `pythia-410m` plus `pythia-160m`:
 
 ```powershell
 fair-mia run --config configs/vm_main_pythia_410m.json
 ```
 
-Small LoRA fine-tuning run:
+Recommended PAN 2017 LoRA fine-tuning run:
 
 ```powershell
-fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 200 --epochs 1
+fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 1000 --epochs 2 --max-length 256 --seed 0
 fair-mia run --config configs/vm_finetune_lora_pythia_160m.json
 ```
 
@@ -165,7 +160,7 @@ fair-mia run --config configs/vm_finetune_lora_pythia_160m.json
 Each run writes to `outputs/<run_id>/`:
 
 - `results.jsonl`: per-sample attack scores and diagnostics
-- `summary.csv`: aggregate, per-group, and PLD/gap metrics
+- `summary.csv`: aggregate, per-group, PLD/gap metrics, plus balanced and majority-class accuracy columns
 - `overlap_report.json`: 4-gram, 7-gram, and 13-gram overlap diagnostics
 - `run_manifest.json`: config, seed, sample summary, attacks, scenarios, and version
 
@@ -187,6 +182,7 @@ Read `summary.csv` first. Every attack/scenario should have `all`, `G0`, `G1`, a
 - `prepare-pile-sample` fails with `Dataset scripts are no longer supported`: install a compatible Hugging Face Datasets release with `pip install "datasets<5"` and retry.
 - Model not found during `run`: execute `fair-mia cache-model` for the model ID and cache dir used by the config.
 - PAN conversion fails: confirm the CSV has text, group, and split columns, and exactly two group values or explicit `--group0-value` / `--group1-value`.
+- RAG benchmark execution fails with an unsupported error: this is intentional until retrieved context is injected into model scoring.
 - CUDA memory pressure: reduce sample count, lower `max_length`, use `pythia-160m`, or keep only one scenario per run.
 - Unexpected fairness signal on Pile sample: treat it as a pipeline/mechanics run unless the dataset has real sensitive attributes.
 

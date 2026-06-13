@@ -1,6 +1,13 @@
 import unittest
 
-from fair_mia.metrics import auc_roc, best_threshold_accuracy, privacy_leakage_disparity, tpr_at_fpr
+from fair_mia.metrics import (
+    auc_roc,
+    best_threshold_accuracy,
+    best_threshold_balanced_accuracy,
+    majority_class_accuracy,
+    privacy_leakage_disparity,
+    tpr_at_fpr,
+)
 
 
 class MetricTests(unittest.TestCase):
@@ -19,10 +26,19 @@ class MetricTests(unittest.TestCase):
         scores = [0.9, 0.7, 0.6, 0.1]
         self.assertEqual(best_threshold_accuracy(labels, scores), 0.75)
 
+    def test_balanced_accuracy_stays_near_chance_for_majority_prediction(self):
+        labels = [True, True, True, False]
+        scores = [0.5, 0.5, 0.5, 0.5]
+        self.assertEqual(best_threshold_accuracy(labels, scores), 0.75)
+        self.assertEqual(best_threshold_balanced_accuracy(labels, scores), 0.5)
+
+    def test_majority_class_accuracy(self):
+        labels = [True, True, True, False, False]
+        self.assertEqual(majority_class_accuracy(labels), 0.6)
+
     def test_privacy_leakage_disparity(self):
         self.assertAlmostEqual(privacy_leakage_disparity({"G0": 0.7, "G1": 0.4}), 0.3)
 
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -8,7 +8,7 @@
     "default_scenario": "offline"
   },
   "attacks": ["loss", "reference", "zlib", "min_k", "neighborhood"],
-  "scenarios": ["pretraining", "finetuning", "rag"],
+  "scenarios": ["pretraining", "finetuning"],
   "model": {
     "name": "fake-target",
     "member_bias": -0.4,
@@ -26,4 +26,3 @@
     "top_k": 2
   }
 }
-

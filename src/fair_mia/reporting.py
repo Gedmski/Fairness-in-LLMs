@@ -35,6 +35,8 @@ def write_summary_csv(records: list[AttackRecord], path: str | Path) -> None:
         "tpr_at_1_fpr",
         "tpr_at_0_1_fpr",
         "accuracy",
+        "balanced_accuracy",
+        "majority_class_accuracy",
         "pld_auc_roc",
         "pld_accuracy",
     ]
@@ -48,4 +50,3 @@ def write_json(payload: dict[str, Any], path: str | Path) -> None:
     with Path(path).open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, sort_keys=True)
         handle.write("\n")
-

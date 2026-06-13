@@ -61,6 +61,34 @@ def best_threshold_accuracy(labels: list[bool], scores: list[float]) -> float:
     return best
 
 
+def best_threshold_balanced_accuracy(labels: list[bool], scores: list[float]) -> float:
+    if not labels:
+        return 0.0
+    positives = sum(1 for label in labels if label)
+    negatives = len(labels) - positives
+    if positives == 0 or negatives == 0:
+        return 0.0
+
+    thresholds = sorted(set(scores), reverse=True)
+    candidates = thresholds + [min(thresholds) - 1.0] if thresholds else [0.0]
+    best = 0.0
+    for threshold in candidates:
+        true_positive = sum(1 for label, score in zip(labels, scores) if label and score >= threshold)
+        true_negative = sum(1 for label, score in zip(labels, scores) if not label and score < threshold)
+        tpr = true_positive / positives
+        tnr = true_negative / negatives
+        best = max(best, (tpr + tnr) / 2.0)
+    return best
+
+
+def majority_class_accuracy(labels: list[bool]) -> float:
+    if not labels:
+        return 0.0
+    positives = sum(1 for label in labels if label)
+    negatives = len(labels) - positives
+    return max(positives, negatives) / len(labels)
+
+
 def privacy_leakage_disparity(group_metrics: dict[str, float], group_a: str = "G0", group_b: str = "G1") -> float:
     return abs(group_metrics.get(group_a, 0.0) - group_metrics.get(group_b, 0.0))
 
@@ -83,6 +111,8 @@ def summarize_records(records: list[AttackRecord]) -> list[dict[str, object]]:
             "tpr_at_1_fpr": round(tpr_at_fpr(labels, scores, 0.01), 6),
             "tpr_at_0_1_fpr": round(tpr_at_fpr(labels, scores, 0.001), 6),
             "accuracy": round(best_threshold_accuracy(labels, scores), 6),
+            "balanced_accuracy": round(best_threshold_balanced_accuracy(labels, scores), 6),
+            "majority_class_accuracy": round(majority_class_accuracy(labels), 6),
             "pld_auc_roc": "",
             "pld_accuracy": "",
         }
@@ -108,6 +138,8 @@ def summarize_records(records: list[AttackRecord]) -> list[dict[str, object]]:
                     "tpr_at_1_fpr": round(tpr_at_fpr(group_labels, group_scores, 0.01), 6),
                     "tpr_at_0_1_fpr": round(tpr_at_fpr(group_labels, group_scores, 0.001), 6),
                     "accuracy": round(group_accuracy, 6),
+                    "balanced_accuracy": round(best_threshold_balanced_accuracy(group_labels, group_scores), 6),
+                    "majority_class_accuracy": round(majority_class_accuracy(group_labels), 6),
                     "pld_auc_roc": "",
                     "pld_accuracy": "",
                 }
@@ -122,9 +154,10 @@ def summarize_records(records: list[AttackRecord]) -> list[dict[str, object]]:
                 "tpr_at_1_fpr": "",
                 "tpr_at_0_1_fpr": "",
                 "accuracy": "",
+                "balanced_accuracy": "",
+                "majority_class_accuracy": "",
                 "pld_auc_roc": round(privacy_leakage_disparity(per_group_auc), 6),
                 "pld_accuracy": round(privacy_leakage_disparity(per_group_accuracy), 6),
             }
         )
     return rows
-

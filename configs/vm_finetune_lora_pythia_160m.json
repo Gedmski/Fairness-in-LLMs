@@ -16,7 +16,7 @@
     "cache_dir": "artifacts/models",
     "dtype": "bfloat16",
     "device_map": "auto",
-    "max_length": 512,
+    "max_length": 256,
     "batch_size": 1,
     "local_files_only": true,
     "trust_remote_code": false
@@ -25,12 +25,11 @@
     "base_model_id": "EleutherAI/pythia-160m",
     "output_dir": "artifacts/adapters/pythia_160m_lora",
     "method": "lora",
-    "max_train_samples": 200,
-    "epochs": 1,
+    "max_train_samples": 1000,
+    "epochs": 2,
     "learning_rate": 0.0002
   },
   "rag": {
     "top_k": 2
   }
 }
-
