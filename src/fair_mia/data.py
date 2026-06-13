@@ -7,6 +7,7 @@ import csv
 from collections import Counter
 from pathlib import Path
 from typing import Iterable
+import xml.etree.ElementTree as ET
 
 from fair_mia.types import TextSample
 
@@ -140,6 +141,101 @@ def prepare_pan_from_csv(
     write_jsonl_samples([sample for sample in samples if sample.is_member], members_path)
     write_jsonl_samples([sample for sample in samples if not sample.is_member], nonmembers_path)
     return members_path, nonmembers_path
+
+
+def prepare_pan17_from_xml(
+    *,
+    train_dir: str | Path,
+    test_dir: str | Path,
+    output_dir: str | Path,
+    lang: str = "en",
+) -> tuple[Path, Path]:
+    train_lang_dir = _resolve_pan17_lang_dir(train_dir, lang)
+    test_lang_dir = _resolve_pan17_lang_dir(test_dir, lang)
+    train_truth = _load_pan17_truth(train_lang_dir / "truth.txt")
+    test_truth = _load_pan17_truth(test_lang_dir / "truth.txt")
+
+    members = _build_pan17_samples(train_lang_dir, train_truth, is_member=True)
+    nonmembers = _build_pan17_samples(test_lang_dir, test_truth, is_member=False)
+    samples = members + nonmembers
+    validate_samples(samples)
+
+    output_dir = Path(output_dir)
+    members_path = output_dir / "members.jsonl"
+    nonmembers_path = output_dir / "nonmembers.jsonl"
+    write_jsonl_samples(members, members_path)
+    write_jsonl_samples(nonmembers, nonmembers_path)
+    return members_path, nonmembers_path
+
+
+def _resolve_pan17_lang_dir(base_dir: str | Path, lang: str) -> Path:
+    base_path = Path(base_dir)
+    lang_path = base_path / lang
+    candidate = lang_path if lang_path.exists() else base_path
+    if not candidate.exists():
+        raise FileNotFoundError(f"PAN 2017 directory not found: {base_path}")
+    if not (candidate / "truth.txt").exists():
+        raise FileNotFoundError(f"PAN 2017 truth file not found under: {candidate}")
+    return candidate
+
+
+def _load_pan17_truth(path: str | Path) -> dict[str, dict[str, str]]:
+    labels: dict[str, dict[str, str]] = {}
+    with Path(path).open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            parts = line.strip().split(":::")
+            if len(parts) != 3:
+                raise ValueError(f"Invalid PAN 2017 truth row at {path}:{line_number}")
+            author_id, gender, variety = parts
+            labels[author_id] = {"gender": gender.strip().lower(), "variety": variety.strip().lower()}
+    return labels
+
+
+def _build_pan17_samples(
+    directory: Path,
+    truth: dict[str, dict[str, str]],
+    *,
+    is_member: bool,
+) -> list[TextSample]:
+    samples: list[TextSample] = []
+    for xml_path in sorted(directory.glob("*.xml")):
+        author_id = xml_path.stem
+        if author_id not in truth:
+            continue
+        gender = truth[author_id]["gender"]
+        if gender == "female":
+            group = "G0"
+        elif gender == "male":
+            group = "G1"
+        else:
+            continue
+        text = _read_pan17_author_text(xml_path)
+        samples.append(
+            TextSample(
+                sample_id=author_id,
+                text=text,
+                is_member=is_member,
+                group=group,
+                scenario="finetuning",
+                metadata={
+                    "source": "pan17",
+                    "lang": "en",
+                    "original_group": gender,
+                    "variety": truth[author_id]["variety"],
+                    "split": "train" if is_member else "test",
+                    "documents_path": str(xml_path),
+                },
+            )
+        )
+    return samples
+
+
+def _read_pan17_author_text(path: str | Path) -> str:
+    root = ET.parse(path).getroot()
+    documents = [document.text.strip() for document in root.findall(".//document") if document.text and document.text.strip()]
+    if not documents:
+        raise ValueError(f"PAN 2017 XML has no non-empty documents: {path}")
+    return "\n".join(documents)
 
 
 def prepare_pile_sample(

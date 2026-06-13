@@ -9,7 +9,13 @@ from pathlib import Path
 
 from fair_mia import __version__
 from fair_mia.config import BenchmarkConfig, load_config
-from fair_mia.data import load_benchmark_samples, prepare_pan_from_csv, prepare_pile_sample, summarize_samples
+from fair_mia.data import (
+    load_benchmark_samples,
+    prepare_pan_from_csv,
+    prepare_pan17_from_xml,
+    prepare_pile_sample,
+    summarize_samples,
+)
 from fair_mia.defenses import NoOpDefense
 from fair_mia.models import FakeLanguageModelAdapter, HuggingFaceCausalLMAdapter
 from fair_mia.models.huggingface import cache_hf_model
@@ -49,6 +55,15 @@ def build_parser() -> argparse.ArgumentParser:
     pan_parser.add_argument("--id-field", default="sample_id")
     pan_parser.add_argument("--group0-value")
     pan_parser.add_argument("--group1-value")
+
+    pan17_parser = subparsers.add_parser(
+        "prepare-pan17-xml",
+        help="Convert PAN 2017 author-profiling XML plus truth.txt into canonical JSONL.",
+    )
+    pan17_parser.add_argument("--train-dir", required=True, help="PAN 2017 training directory or its language subdirectory.")
+    pan17_parser.add_argument("--test-dir", required=True, help="PAN 2017 test directory or its language subdirectory.")
+    pan17_parser.add_argument("--output-dir", required=True)
+    pan17_parser.add_argument("--lang", default="en")
 
     pile_parser = subparsers.add_parser("prepare-pile-sample", help="Stream a capped Pile sample into canonical JSONL.")
     pile_parser.add_argument("--output-dir", required=True)
@@ -226,6 +241,18 @@ def cmd_prepare_pile_sample(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prepare_pan17_xml(args: argparse.Namespace) -> int:
+    members_path, nonmembers_path = prepare_pan17_from_xml(
+        train_dir=args.train_dir,
+        test_dir=args.test_dir,
+        output_dir=args.output_dir,
+        lang=args.lang,
+    )
+    print(f"Wrote {members_path}")
+    print(f"Wrote {nonmembers_path}")
+    return 0
+
+
 def cmd_finetune_lora(args: argparse.Namespace) -> int:
     from fair_mia.finetune import finetune_lora
 
@@ -256,6 +283,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_cache_model(args)
     if args.command == "prepare-pan":
         return cmd_prepare_pan(args)
+    if args.command == "prepare-pan17-xml":
+        return cmd_prepare_pan17_xml(args)
     if args.command == "prepare-pile-sample":
         return cmd_prepare_pile_sample(args)
     if args.command == "finetune-lora":
