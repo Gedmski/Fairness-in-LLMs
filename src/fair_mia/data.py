@@ -151,9 +151,17 @@ def prepare_pile_sample(
     subset: str | None = None,
 ) -> tuple[Path, Path]:
     try:
+        import datasets
         from datasets import load_dataset
     except ImportError as exc:
         raise RuntimeError("Install research dependencies before preparing Pile samples: pip install -e .[research]") from exc
+
+    major_version = int(str(getattr(datasets, "__version__", "0")).split(".", 1)[0])
+    if major_version >= 5:
+        raise RuntimeError(
+            "prepare-pile-sample requires a datasets version below 5 because EleutherAI/pile still uses a dataset script. "
+            "Install a compatible release, for example: pip install 'datasets<5'"
+        )
 
     dataset_kwargs = {
         "path": "EleutherAI/pile",

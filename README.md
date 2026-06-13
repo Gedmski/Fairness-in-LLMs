@@ -176,6 +176,7 @@ Read `summary.csv` first. Every attack/scenario should have `all`, `G0`, `G1`, a
 ## Troubleshooting
 
 - `ModuleNotFoundError` for `torch`, `transformers`, or `datasets`: run the VM setup script or `pip install -e ".[research]"`.
+- `prepare-pile-sample` fails with `Dataset scripts are no longer supported`: install a compatible Hugging Face Datasets release with `pip install "datasets<5"` and retry.
 - Model not found during `run`: execute `fair-mia cache-model` for the model ID and cache dir used by the config.
 - PAN conversion fails: confirm the CSV has text, group, and split columns, and exactly two group values or explicit `--group0-value` / `--group1-value`.
 - CUDA memory pressure: reduce sample count, lower `max_length`, use `pythia-160m`, or keep only one scenario per run.

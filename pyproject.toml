@@ -13,7 +13,7 @@ dependencies = []
 [project.optional-dependencies]
 research = [
   "accelerate",
-  "datasets",
+  "datasets<5",
   "numpy",
   "pandas",
   "peft",
