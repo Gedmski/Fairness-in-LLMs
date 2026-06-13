@@ -7,7 +7,7 @@ fi
 
 ./.venv/bin/python -m pip install --upgrade pip
 ./.venv/bin/python -m pip install -e ".[research]"
-./.venv/bin/python - <<'PY'
+./.venv/bin/python - <<'PY' || echo "GPU probe warning: PyTorch could not fully initialize CUDA; continuing with setup."
 import torch
 print("cuda_available=", torch.cuda.is_available())
 print("gpu_count=", torch.cuda.device_count())
@@ -17,4 +17,3 @@ PY
 ./.venv/bin/python -m unittest discover -s tests
 
 echo "VM setup complete. No models were downloaded by this script."
-

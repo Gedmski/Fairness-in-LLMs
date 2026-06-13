@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from fair_mia.models.huggingface import HuggingFaceCausalLMAdapter, MissingResearchDependencyError
 from fair_mia.types import TextSample
@@ -27,10 +28,17 @@ class HuggingFaceAdapterTests(unittest.TestCase):
 
     def test_missing_dependencies_fail_clearly(self):
         adapter = HuggingFaceCausalLMAdapter(model_id="EleutherAI/pythia-160m", local_files_only=True)
-        with self.assertRaises(MissingResearchDependencyError):
-            adapter.score_tokens("alpha beta")
+        real_import = __import__
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name in {"torch", "transformers"}:
+                raise ImportError(f"mocked missing dependency: {name}")
+            return real_import(name, globals, locals, fromlist, level)
+
+        with patch("builtins.__import__", side_effect=fake_import):
+            with self.assertRaises(MissingResearchDependencyError):
+                adapter.score_tokens("alpha beta")
 
 
 if __name__ == "__main__":
     unittest.main()
-
