@@ -1,0 +1,70 @@
+{
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k",
+    "neighborhood"
+  ],
+  "config": {
+    "attacks": [
+      "loss",
+      "reference",
+      "zlib",
+      "min_k",
+      "neighborhood"
+    ],
+    "dataset": {
+      "default_scenario": "pretraining",
+      "members_path": "data/pile_sample/members.jsonl",
+      "nonmembers_path": "data/pile_sample/nonmembers.jsonl"
+    },
+    "model": {
+      "backend": "hf",
+      "batch_size": 1,
+      "cache_dir": "artifacts/models",
+      "device_map": "auto",
+      "dtype": "bfloat16",
+      "local_files_only": true,
+      "max_length": 512,
+      "model_id": "EleutherAI/pythia-410m",
+      "reference_model_id": "EleutherAI/pythia-160m",
+      "trust_remote_code": false
+    },
+    "outputs_dir": "outputs",
+    "rag": {
+      "top_k": 3
+    },
+    "run_id": "vm_main_pythia_410m",
+    "scenarios": [
+      "pretraining",
+      "rag"
+    ],
+    "seed": 23
+  },
+  "created_at": "2026-06-13T04:48:51.908043+00:00",
+  "run_id": "vm_main_pythia_410m",
+  "sample_summary": {
+    "group_membership": {
+      "G0:member": 250,
+      "G0:nonmember": 250,
+      "G1:member": 250,
+      "G1:nonmember": 250
+    },
+    "groups": {
+      "G0": 500,
+      "G1": 500
+    },
+    "membership": {
+      "member": 500,
+      "nonmember": 500
+    },
+    "total": 1000
+  },
+  "scenarios": [
+    "pretraining",
+    "rag"
+  ],
+  "seed": 23,
+  "version": "0.1.0"
+}

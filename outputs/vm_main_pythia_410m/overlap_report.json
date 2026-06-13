@@ -1,0 +1,96 @@
+{
+  "member_count": 500,
+  "n_grams": {
+    "13": {
+      "flagged_pairs": [],
+      "max_overlap": 0.052632,
+      "mean_max_overlap": 0.000151,
+      "pairs_above_threshold": 0
+    },
+    "4": {
+      "flagged_pairs": [
+        {
+          "member_id": "wikitext-306",
+          "nonmember_id": "wikitext-506",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-320",
+          "nonmember_id": "wikitext-533",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-409",
+          "nonmember_id": "wikitext-601",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-218",
+          "nonmember_id": "wikitext-618",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-320",
+          "nonmember_id": "wikitext-674",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-306",
+          "nonmember_id": "wikitext-798",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-27",
+          "nonmember_id": "wikitext-803",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-105",
+          "nonmember_id": "wikitext-829",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-364",
+          "nonmember_id": "wikitext-875",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-367",
+          "nonmember_id": "wikitext-889",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-430",
+          "nonmember_id": "wikitext-901",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-320",
+          "nonmember_id": "wikitext-914",
+          "overlap": 1.0
+        },
+        {
+          "member_id": "wikitext-104",
+          "nonmember_id": "wikitext-968",
+          "overlap": 1.0
+        }
+      ],
+      "max_overlap": 1.0,
+      "mean_max_overlap": 0.039459,
+      "pairs_above_threshold": 13
+    },
+    "7": {
+      "flagged_pairs": [
+        {
+          "member_id": "wikitext-364",
+          "nonmember_id": "wikitext-875",
+          "overlap": 1.0
+        }
+      ],
+      "max_overlap": 1.0,
+      "mean_max_overlap": 0.002683,
+      "pairs_above_threshold": 1
+    }
+  },
+  "nonmember_count": 500
+}
