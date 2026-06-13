@@ -4,6 +4,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .venv/
+.venv-*/
 venv/
 .venv-*/
 build/
@@ -15,4 +16,4 @@ outputs/
 
 # Local VM data/model caches
 artifacts/
-data/
+# data/

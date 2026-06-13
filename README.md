@@ -91,6 +91,14 @@ fair-mia prepare-pan --input-dir data/raw/pan --output-dir data/pan_demo --group
 
 The converter maps the two observed group values to `G0` and `G1`. Use `--group0-value` and `--group1-value` when the CSV has more than two possible values or when you need explicit mapping.
 
+PAN 2017 author-profiling releases are often distributed as per-author XML files plus `truth.txt` instead of a flat CSV. Use the dedicated converter for that layout:
+
+```powershell
+fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en
+```
+
+This converter treats the training authors as members, the test authors as non-members, joins each author's XML documents into one text field, and maps `female -> G0` and `male -> G1`.
+
 ### Capped Pile Sample
 
 The Pile helper is for pre-training-style MIA mechanics. It streams a capped sample and does not download the full dataset.
