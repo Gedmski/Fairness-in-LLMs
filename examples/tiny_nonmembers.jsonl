@@ -1,0 +1,5 @@
+{"sample_id":"n-g0-001","text":"omega travel journal mentions train delays museum tickets and weather changes during a weekend itinerary","group":"G0","metadata":{"source":"synthetic"}}
+{"sample_id":"n-g0-002","text":"sigma cooking article explains pantry planning soup seasoning and market vegetables for a family meal","group":"G0","metadata":{"source":"synthetic"}}
+{"sample_id":"n-g1-001","text":"theta clinic record includes medication schedule and repeated follow up visit notes for diabetes care","group":"G1","metadata":{"source":"synthetic","purpose":"overlap_check"}}
+{"sample_id":"n-g1-002","text":"lambda library update lists archive hours catalog repairs and reading room policies for public visitors","group":"G1","metadata":{"source":"synthetic"}}
+

@@ -1,0 +1,29 @@
+{
+  "run_id": "offline_demo",
+  "seed": 17,
+  "outputs_dir": "outputs",
+  "dataset": {
+    "members_path": "examples/tiny_members.jsonl",
+    "nonmembers_path": "examples/tiny_nonmembers.jsonl",
+    "default_scenario": "offline"
+  },
+  "attacks": ["loss", "reference", "zlib", "min_k", "neighborhood"],
+  "scenarios": ["pretraining", "finetuning", "rag"],
+  "model": {
+    "name": "fake-target",
+    "member_bias": -0.4,
+    "group_bias": {
+      "G0": 0.0,
+      "G1": 0.18
+    },
+    "reference_member_bias": -0.05,
+    "reference_group_bias": {
+      "G0": 0.0,
+      "G1": 0.02
+    }
+  },
+  "rag": {
+    "top_k": 2
+  }
+}
+

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ ! -d ".venv" ]; then
+  python3 -m venv .venv
+fi
+
+./.venv/bin/python -m pip install --upgrade pip
+./.venv/bin/python -m pip install -e ".[research]"
+./.venv/bin/python - <<'PY'
+import torch
+print("cuda_available=", torch.cuda.is_available())
+print("gpu_count=", torch.cuda.device_count())
+for i in range(torch.cuda.device_count()):
+    print("gpu", i, torch.cuda.get_device_name(i))
+PY
+./.venv/bin/python -m unittest discover -s tests
+
+echo "VM setup complete. No models were downloaded by this script."
+

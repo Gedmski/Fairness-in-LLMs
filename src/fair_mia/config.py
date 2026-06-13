@@ -1,0 +1,123 @@
+"""Configuration loading and validation."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+
+@dataclass(frozen=True)
+class DatasetConfig:
+    members_path: Path
+    nonmembers_path: Path
+    default_scenario: str = "offline"
+
+
+@dataclass(frozen=True)
+class ModelConfig:
+    backend: str = "fake"
+    name: str = "fake-target"
+    member_bias: float = -0.35
+    group_bias: dict[str, float] = field(default_factory=dict)
+    reference_member_bias: float = -0.05
+    reference_group_bias: dict[str, float] = field(default_factory=dict)
+    model_id: str = "EleutherAI/pythia-160m"
+    reference_model_id: str | None = None
+    revision: str | None = None
+    cache_dir: Path | None = None
+    dtype: str = "auto"
+    device_map: str = "auto"
+    max_length: int = 512
+    batch_size: int = 1
+    local_files_only: bool = False
+    trust_remote_code: bool = False
+
+
+@dataclass(frozen=True)
+class RagConfig:
+    top_k: int = 2
+
+
+@dataclass(frozen=True)
+class BenchmarkConfig:
+    run_id: str
+    seed: int
+    outputs_dir: Path
+    dataset: DatasetConfig
+    attacks: list[str]
+    scenarios: list[str]
+    model: ModelConfig
+    rag: RagConfig = field(default_factory=RagConfig)
+    raw: dict[str, Any] = field(default_factory=dict)
+
+
+def load_config(path: str | Path) -> BenchmarkConfig:
+    config_path = Path(path)
+    with config_path.open("r", encoding="utf-8") as handle:
+        raw = json.load(handle)
+
+    base_dir = config_path.parent.parent if config_path.parent.name == "configs" else Path.cwd()
+    dataset_raw = raw.get("dataset", {})
+    model_raw = raw.get("model", {})
+    rag_raw = raw.get("rag", {})
+
+    def resolve_path(value: str) -> Path:
+        path_value = Path(value)
+        return path_value if path_value.is_absolute() else (base_dir / path_value)
+
+    dataset = DatasetConfig(
+        members_path=resolve_path(dataset_raw["members_path"]),
+        nonmembers_path=resolve_path(dataset_raw["nonmembers_path"]),
+        default_scenario=dataset_raw.get("default_scenario", "offline"),
+    )
+    model = ModelConfig(
+        backend=model_raw.get("backend", "fake"),
+        name=model_raw.get("name", "fake-target"),
+        member_bias=float(model_raw.get("member_bias", -0.35)),
+        group_bias={str(k): float(v) for k, v in model_raw.get("group_bias", {}).items()},
+        reference_member_bias=float(model_raw.get("reference_member_bias", -0.05)),
+        reference_group_bias={str(k): float(v) for k, v in model_raw.get("reference_group_bias", {}).items()},
+        model_id=str(model_raw.get("model_id", "EleutherAI/pythia-160m")),
+        reference_model_id=model_raw.get("reference_model_id"),
+        revision=model_raw.get("revision"),
+        cache_dir=resolve_path(model_raw["cache_dir"]) if model_raw.get("cache_dir") else None,
+        dtype=str(model_raw.get("dtype", "auto")),
+        device_map=str(model_raw.get("device_map", "auto")),
+        max_length=int(model_raw.get("max_length", 512)),
+        batch_size=int(model_raw.get("batch_size", 1)),
+        local_files_only=bool(model_raw.get("local_files_only", False)),
+        trust_remote_code=bool(model_raw.get("trust_remote_code", False)),
+    )
+    rag = RagConfig(top_k=int(rag_raw.get("top_k", 2)))
+    config = BenchmarkConfig(
+        run_id=str(raw.get("run_id", "offline_demo")),
+        seed=int(raw.get("seed", 7)),
+        outputs_dir=resolve_path(raw.get("outputs_dir", "outputs")),
+        dataset=dataset,
+        attacks=[str(name) for name in raw.get("attacks", [])],
+        scenarios=[str(name) for name in raw.get("scenarios", [])],
+        model=model,
+        rag=rag,
+        raw=raw,
+    )
+    validate_config(config)
+    return config
+
+
+def validate_config(config: BenchmarkConfig) -> None:
+    if not config.attacks:
+        raise ValueError("Config must include at least one attack.")
+    if not config.scenarios:
+        raise ValueError("Config must include at least one scenario.")
+    if not config.dataset.members_path.exists():
+        raise FileNotFoundError(f"Members file not found: {config.dataset.members_path}")
+    if not config.dataset.nonmembers_path.exists():
+        raise FileNotFoundError(f"Non-members file not found: {config.dataset.nonmembers_path}")
+    if config.model.backend not in {"fake", "hf"}:
+        raise ValueError("model.backend must be either 'fake' or 'hf'.")
+    if config.model.max_length <= 0:
+        raise ValueError("model.max_length must be positive.")
+    if config.model.batch_size <= 0:
+        raise ValueError("model.batch_size must be positive.")

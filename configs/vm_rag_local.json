@@ -1,0 +1,28 @@
+{
+  "run_id": "vm_rag_local",
+  "seed": 31,
+  "outputs_dir": "outputs",
+  "dataset": {
+    "members_path": "data/pan_demo/members.jsonl",
+    "nonmembers_path": "data/pan_demo/nonmembers.jsonl",
+    "default_scenario": "rag"
+  },
+  "attacks": ["loss", "reference", "zlib", "min_k", "neighborhood"],
+  "scenarios": ["rag"],
+  "model": {
+    "backend": "hf",
+    "model_id": "EleutherAI/pythia-160m",
+    "reference_model_id": "EleutherAI/pythia-160m",
+    "cache_dir": "artifacts/models",
+    "dtype": "bfloat16",
+    "device_map": "auto",
+    "max_length": 512,
+    "batch_size": 1,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "rag": {
+    "top_k": 5
+  }
+}
+

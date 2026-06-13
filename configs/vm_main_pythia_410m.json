@@ -1,0 +1,28 @@
+{
+  "run_id": "vm_main_pythia_410m",
+  "seed": 23,
+  "outputs_dir": "outputs",
+  "dataset": {
+    "members_path": "data/pile_sample/members.jsonl",
+    "nonmembers_path": "data/pile_sample/nonmembers.jsonl",
+    "default_scenario": "pretraining"
+  },
+  "attacks": ["loss", "reference", "zlib", "min_k", "neighborhood"],
+  "scenarios": ["pretraining", "rag"],
+  "model": {
+    "backend": "hf",
+    "model_id": "EleutherAI/pythia-410m",
+    "reference_model_id": "EleutherAI/pythia-160m",
+    "cache_dir": "artifacts/models",
+    "dtype": "bfloat16",
+    "device_map": "auto",
+    "max_length": 512,
+    "batch_size": 1,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "rag": {
+    "top_k": 3
+  }
+}
+
