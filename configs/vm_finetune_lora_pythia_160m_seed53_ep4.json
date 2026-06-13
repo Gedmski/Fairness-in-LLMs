@@ -1,0 +1,35 @@
+{
+  "run_id": "vm_finetune_lora_pythia_160m_seed53_ep4",
+  "seed": 53,
+  "outputs_dir": "outputs",
+  "dataset": {
+    "members_path": "data/pan_demo/members.jsonl",
+    "nonmembers_path": "data/pan_demo/nonmembers.jsonl",
+    "default_scenario": "finetuning"
+  },
+  "attacks": ["loss", "reference", "zlib", "min_k", "neighborhood"],
+  "scenarios": ["finetuning"],
+  "model": {
+    "backend": "hf",
+    "model_id": "artifacts/adapters/pythia_160m_lora_seed53_ep4",
+    "reference_model_id": "EleutherAI/pythia-160m",
+    "cache_dir": "artifacts/models",
+    "dtype": "bfloat16",
+    "device_map": "auto",
+    "max_length": 256,
+    "batch_size": 1,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "finetuning": {
+    "base_model_id": "EleutherAI/pythia-160m",
+    "output_dir": "artifacts/adapters/pythia_160m_lora_seed53_ep4",
+    "method": "lora",
+    "max_train_samples": 1000,
+    "epochs": 4,
+    "learning_rate": 0.0002
+  },
+  "rag": {
+    "top_k": 2
+  }
+}
