@@ -6,6 +6,7 @@ import json
 import csv
 import random
 from collections import Counter, defaultdict
+from dataclasses import replace
 from pathlib import Path
 from typing import Iterable
 import xml.etree.ElementTree as ET
@@ -26,6 +27,14 @@ def load_jsonl_samples(path: str | Path, *, is_member: bool, default_scenario: s
             group = str(payload["group"])
             scenario = str(payload.get("scenario", default_scenario))
             metadata = dict(payload.get("metadata", {}))
+            attributes = {
+                str(key): str(value)
+                for key, value in dict(payload.get("attributes", {})).items()
+                if value is not None
+            }
+            for key in ("gender", "language", "variety", "dataset"):
+                if key not in attributes and metadata.get(key) is not None:
+                    attributes[key] = str(metadata[key])
             samples.append(
                 TextSample(
                     sample_id=sample_id,
@@ -34,6 +43,7 @@ def load_jsonl_samples(path: str | Path, *, is_member: bool, default_scenario: s
                     group=group,
                     scenario=scenario,
                     metadata=metadata,
+                    attributes=attributes,
                 )
             )
     return samples
@@ -83,6 +93,7 @@ def write_jsonl_samples(samples: Iterable[TextSample], path: str | Path) -> None
                 "group": sample.group,
                 "scenario": sample.scenario,
                 "metadata": sample.metadata,
+                "attributes": sample.attributes,
             }
             handle.write(json.dumps(payload, sort_keys=True) + "\n")
 
@@ -134,6 +145,10 @@ def prepare_pan_from_csv(
                 group=group,
                 scenario="finetuning",
                 metadata={"source": "pan", "original_group": group_raw, "split": row[split_field]},
+                attributes={
+                    "gender": str(group_raw).lower(),
+                    "dataset": "pan_csv",
+                },
             )
         )
     validate_samples(samples)
@@ -155,6 +170,7 @@ def prepare_pan17_from_xml(
     window_tokens: int = 256,
     max_windows_per_bucket: int = 250,
     seed: int = 0,
+    balance: bool = True,
 ) -> tuple[Path, Path]:
     if window_tokens <= 0:
         raise ValueError("window_tokens must be positive.")
@@ -185,12 +201,13 @@ def prepare_pan17_from_xml(
         window_tokens=window_tokens,
         is_member=False,
     )
-    members, nonmembers = _balance_pan17_samples(
-        members,
-        nonmembers,
-        max_windows_per_bucket=max_windows_per_bucket,
-        seed=seed,
-    )
+    if balance:
+        members, nonmembers = _balance_pan17_samples(
+            members,
+            nonmembers,
+            max_windows_per_bucket=max_windows_per_bucket,
+            seed=seed,
+        )
     samples = members + nonmembers
     validate_samples(samples)
 
@@ -319,13 +336,14 @@ def _window_pan17_author_text(
             continue
         samples.append(
             TextSample(
-                sample_id=f"{author_id}:w{window_index}",
+                sample_id=f"{lang}:{split}:{author_id}:w{window_index}",
                 text=window_text,
                 is_member=is_member,
                 group=group,
                 scenario="finetuning",
                 metadata={
-                    "author_id": author_id,
+                    "author_id": f"{lang}:{split}:{author_id}",
+                    "original_author_id": author_id,
                     "window_index": window_index,
                     "token_count": len(window_ids),
                     "original_group": original_group,
@@ -334,6 +352,12 @@ def _window_pan17_author_text(
                     "source": "pan17",
                     "lang": lang,
                     "tokenizer_model_id": tokenizer_model_id,
+                },
+                attributes={
+                    "gender": original_group,
+                    "language": lang,
+                    "variety": variety,
+                    "dataset": "pan17",
                 },
             )
         )
@@ -386,6 +410,119 @@ def _balance_pan17_samples(
     return balanced_members, balanced_nonmembers
 
 
+def prepare_pan17_multilingual(
+    *,
+    train_dir: str | Path,
+    test_dir: str | Path,
+    output_dir: str | Path,
+    languages: tuple[str, ...] = ("en", "es", "pt", "ar"),
+    tokenizer_model_id: str = "Qwen/Qwen3-4B-Base",
+    cache_dir: str | Path | None = None,
+    window_tokens: int = 256,
+) -> tuple[Path, Path]:
+    tokenizer = _load_pan17_tokenizer(tokenizer_model_id, cache_dir)
+    members: list[TextSample] = []
+    nonmembers: list[TextSample] = []
+    for lang in languages:
+        train_lang_dir = _resolve_pan17_lang_dir(train_dir, lang)
+        test_lang_dir = _resolve_pan17_lang_dir(test_dir, lang)
+        members.extend(
+            _build_pan17_samples(
+                train_lang_dir,
+                _load_pan17_truth(train_lang_dir / "truth.txt"),
+                tokenizer=tokenizer,
+                tokenizer_model_id=tokenizer_model_id,
+                lang=lang,
+                window_tokens=window_tokens,
+                is_member=True,
+            )
+        )
+        nonmembers.extend(
+            _build_pan17_samples(
+                test_lang_dir,
+                _load_pan17_truth(test_lang_dir / "truth.txt"),
+                tokenizer=tokenizer,
+                tokenizer_model_id=tokenizer_model_id,
+                lang=lang,
+                window_tokens=window_tokens,
+                is_member=False,
+            )
+        )
+    validate_samples(members + nonmembers)
+    output_dir = Path(output_dir)
+    members_path = output_dir / "members.jsonl"
+    nonmembers_path = output_dir / "nonmembers.jsonl"
+    write_jsonl_samples(members, members_path)
+    write_jsonl_samples(nonmembers, nonmembers_path)
+    return members_path, nonmembers_path
+
+
+def prepare_pan18_from_xml(
+    *,
+    train_dir: str | Path,
+    test_dir: str | Path,
+    output_dir: str | Path,
+    languages: tuple[str, ...] = ("en", "es", "ar"),
+    tokenizer_model_id: str = "Qwen/Qwen3-4B-Base",
+    cache_dir: str | Path | None = None,
+    window_tokens: int = 256,
+) -> tuple[Path, Path]:
+    tokenizer = _load_pan17_tokenizer(tokenizer_model_id, cache_dir)
+    members: list[TextSample] = []
+    nonmembers: list[TextSample] = []
+    for lang in languages:
+        for base_dir, is_member in ((train_dir, True), (test_dir, False)):
+            lang_dir = _resolve_pan17_lang_dir(base_dir, lang)
+            truth = _load_pan18_truth(lang_dir / "truth.txt")
+            for xml_path in sorted(lang_dir.glob("*.xml")):
+                author_id = xml_path.stem
+                gender = truth.get(author_id)
+                if gender not in {"female", "male"}:
+                    continue
+                group = "G0" if gender == "female" else "G1"
+                windows = _window_pan17_author_text(
+                    author_id=author_id,
+                    text=_read_pan17_author_text(xml_path),
+                    group=group,
+                    original_group=gender,
+                    variety="unknown",
+                    split="train" if is_member else "test",
+                    lang=lang,
+                    tokenizer=tokenizer,
+                    tokenizer_model_id=tokenizer_model_id,
+                    window_tokens=window_tokens,
+                    is_member=is_member,
+                )
+                windows = [
+                    replace(
+                        sample,
+                        sample_id=sample.sample_id.replace(f"{lang}:", f"pan18:{lang}:", 1),
+                        metadata={**sample.metadata, "source": "pan18"},
+                        attributes={**sample.attributes, "dataset": "pan18"},
+                    )
+                    for sample in windows
+                ]
+                (members if is_member else nonmembers).extend(windows)
+    validate_samples(members + nonmembers)
+    output_dir = Path(output_dir)
+    members_path = output_dir / "members.jsonl"
+    nonmembers_path = output_dir / "nonmembers.jsonl"
+    write_jsonl_samples(members, members_path)
+    write_jsonl_samples(nonmembers, nonmembers_path)
+    return members_path, nonmembers_path
+
+
+def _load_pan18_truth(path: str | Path) -> dict[str, str]:
+    labels: dict[str, str] = {}
+    with Path(path).open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            parts = [part.strip().lower() for part in line.strip().split(":::")]
+            if len(parts) < 2:
+                raise ValueError(f"Invalid PAN 2018 truth row at {path}:{line_number}")
+            labels[parts[0]] = parts[1]
+    return labels
+
+
 def prepare_pile_sample(
     *,
     output_dir: str | Path,
@@ -433,6 +570,7 @@ def prepare_pile_sample(
             group="G0" if index % 2 == 0 else "G1",
             scenario="pretraining",
             metadata={"source": "pile", "synthetic_group_assignment": True},
+            attributes={"dataset": "pile"},
         )
         target.append(sample)
     samples = members + nonmembers
@@ -453,15 +591,15 @@ def summarize_samples(samples: Iterable[TextSample]) -> dict[str, object]:
         f"{sample.group}:{'member' if sample.is_member else 'nonmember'}" for sample in sample_list
     )
     varieties = {
-        str(sample.metadata.get("variety", "")).strip().lower()
+        str(sample.attributes.get("variety") or sample.metadata.get("variety", "")).strip().lower()
         for sample in sample_list
-        if str(sample.metadata.get("variety", "")).strip()
+        if str(sample.attributes.get("variety") or sample.metadata.get("variety", "")).strip()
     }
     by_group_variety_membership = Counter(
-        f"{sample.group}:{str(sample.metadata.get('variety', 'unknown')).strip().lower()}:"
+        f"{sample.group}:{str(sample.attributes.get('variety') or sample.metadata.get('variety', 'unknown')).strip().lower()}:"
         f"{'member' if sample.is_member else 'nonmember'}"
         for sample in sample_list
-        if str(sample.metadata.get("variety", "")).strip()
+        if str(sample.attributes.get("variety") or sample.metadata.get("variety", "")).strip()
     )
     group_membership_counts = [count for _, count in sorted(by_group_membership.items())]
     summary = {
@@ -474,4 +612,17 @@ def summarize_samples(samples: Iterable[TextSample]) -> dict[str, object]:
     if varieties:
         summary["varieties"] = sorted(varieties)
         summary["group_variety_membership"] = dict(sorted(by_group_variety_membership.items()))
+    languages = Counter(
+        str(sample.attributes.get("language") or sample.metadata.get("lang", "unknown"))
+        for sample in sample_list
+    )
+    if languages and set(languages) != {"unknown"}:
+        summary["languages"] = dict(sorted(languages.items()))
+    authors = {
+        str(sample.attributes.get("author_id") or sample.metadata.get("author_id"))
+        for sample in sample_list
+        if sample.attributes.get("author_id") or sample.metadata.get("author_id")
+    }
+    if authors:
+        summary["authors"] = len(authors)
     return summary

@@ -1,189 +1,215 @@
 # Fair MIA
 
-Fair MIA is a research benchmark for auditing membership inference attack (MIA) risk across binary demographic subgroups in LLM workflows. It is built to compare the three scenarios defined in the PRD/TRD:
+Fair MIA is a study-driven benchmark for membership-inference risk and privacy disparity in fine-tuned causal language models. The current implementation focuses on LoRA/QLoRA experiments over PAN author-profiling data. RAG remains a deferred scenario.
 
-- **Pre-training style evaluation** on open causal LMs such as Pythia
-- **Fine-tuning / instruction-tuning** on smaller demographic or domain datasets
-- **Retrieval-augmented generation (RAG)** where leakage can come from retrieved context, once context-conditioned scoring is implemented
+## Implemented
 
-The project keeps the offline scaffold runnable without model downloads, while providing VM-ready commands for real Hugging Face models and user-provided datasets.
+- Dependency-free JSON/offline benchmark retained for local validation.
+- YAML study runner with shared defaults, named studies, controlled sweeps, stable job hashes, two-GPU scheduling, durable status files, resume, aggregation, and failure logs.
+- PAN 2017 multilingual preparation for English, Spanish, Portuguese, and Arabic.
+- PAN 2018 preparation for English, Spanish, and Arabic.
+- Raw, size-matched-random, and balanced training variants.
+- Native-raw and balanced-audit evaluation variants with author-disjoint calibration/test splits.
+- Binary gender, language, variety, and gender-by-language reporting.
+- PEFT adapter-only LoRA, optional 4-bit QLoRA, gradient checkpointing, target-module detection, and training manifests.
+- Ten attacks: `loss`, `reference`, `zlib`, `min_k`, `neighborhood`, `min_k_plus_plus`, `wbc`, `recall`, `samia`, and `spv_mia`.
+- Calibrated privacy, classification, low-FPR, calibration, utility, disparity, and author-clustered bootstrap metrics.
 
-## Current Status
+## Local Validation
 
-Implemented:
-
-- Canonical JSONL dataset pipeline with strict `G0`/`G1` binary group validation
-- Five baseline attacks: `loss`, `reference`, `zlib`, `min_k`, and `neighborhood`
-- Scenario runners for `pretraining` and `finetuning`
-- Explicit RAG safety error until context-conditioned scoring is implemented
-- Offline fake model adapter for local validation
-- Lazy Hugging Face causal LM adapter for VM runs
-- Explicit model caching command so benchmark runs do not download models unexpectedly
-- PAN-style CSV conversion into canonical member/nonmember JSONL
-- Capped Pile streaming helper for pre-training mechanics experiments
-- LoRA fine-tuning helper for small VM runs
-- Per-group reporting with `all`, `G0`, `G1`, and `gap:G0-G1` rows
-- Output artifacts: `results.jsonl`, `summary.csv`, `overlap_report.json`, and `run_manifest.json`
-
-Not implemented as defaults:
-
-- Full Pile download
-- Automatic PAN download
-- Large Pythia `12B` runs
-- Strong claims from one attack family
-
-## Repository Layout
-
-```text
-configs/                 Offline and VM run configs
-docs/                    PRD, TRD, VM handoff, dataset/model notes
-examples/                Tiny offline JSONL examples
-scripts/                 VM setup scripts
-src/fair_mia/            Benchmark package
-tests/                   Stdlib unittest suite
-```
-
-## Local Offline Validation
-
-The offline path does not require PyTorch, Transformers, Datasets, GPUs, or internet access.
+The existing offline path still requires no model download, GPU, or third-party runtime package:
 
 ```powershell
 python -m fair_mia.cli list-attacks
-python -m fair_mia.cli inspect-data --config configs/offline_demo.json
 python -m fair_mia.cli run --config configs/offline_demo.json
 python -m unittest discover -s tests
 ```
 
-If `python` is not on PATH in the Codex desktop environment, use the bundled Python path shown by Codex.
+`list-attacks` now returns exactly ten attacks. The fake adapter implements every declared capability so all attack contracts can be tested offline.
 
 ## VM Setup
 
-Target VM profile: **2 x NVIDIA L4 GPUs**.
-
-Windows PowerShell:
-
-```powershell
-.\scripts\vm_setup.ps1
-```
-
-Linux shell:
+Target profile: two NVIDIA L4 GPUs with 24 GB VRAM each and at least 150 GB free disk.
 
 ```bash
 bash scripts/vm_setup.sh
 ```
 
-These scripts create a virtual environment, install `.[research]`, print CUDA/GPU information, and run the offline tests. They do **not** download models.
-
-## Dataset Preparation
-
-### PAN-Style Demographic Dataset
-
-PAN data is treated as user-provided because access may require manual approval. The converter expects a CSV with text, binary group metadata, and a split column.
+or:
 
 ```powershell
-fair-mia prepare-pan --input-file data/raw/pan.csv --output-dir data/pan_demo --group-field gender --member-split train
+.\scripts\vm_setup.ps1
 ```
 
-If the input directory contains exactly one CSV:
+The setup scripts install `.[research]`, run the complete offline suite, and execute:
 
-```powershell
-fair-mia prepare-pan --input-dir data/raw/pan --output-dir data/pan_demo --group-field gender --member-split train
+```bash
+fair-mia doctor --config configs/lora_studies.yaml
 ```
 
-The converter maps the two observed group values to `G0` and `G1`. Use `--group0-value` and `--group1-value` when the CSV has more than two possible values or when you need explicit mapping.
+They do not download models or datasets.
 
-PAN 2017 author-profiling releases are often distributed as per-author XML files plus `truth.txt` instead of a flat CSV. Use the dedicated converter for that layout:
+## Data Preparation
 
-```powershell
-fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en --tokenizer-model-id EleutherAI/pythia-160m --window-tokens 256 --max-windows-per-bucket 250 --seed 0
+PAN archives are user-provided. PAN data may require PAN/TIRA access, manual download, or archive credentials. Do not infer demographic attributes from text.
+
+PAN 2017:
+
+```bash
+fair-mia prepare-pan17 \
+  --train-dir /data/pan17/train \
+  --test-dir /data/pan17/test \
+  --output-dir data/pan17_multilingual \
+  --languages en,es,pt,ar \
+  --tokenizer-model-id Qwen/Qwen3-4B-Base \
+  --cache-dir artifacts/models
 ```
 
-This converter treats the training authors as members, the test authors as non-members, creates exact model-token windows, balances by `group x variety x membership`, and maps `female -> G0` and `male -> G1`.
+PAN 2018:
 
-### Capped Pile Sample
-
-The Pile helper is for pre-training-style MIA mechanics. It streams a capped sample and does not download the full dataset.
-
-```powershell
-fair-mia prepare-pile-sample --output-dir data/pile_sample --max-members 500 --max-nonmembers 500 --cache-dir artifacts/datasets
+```bash
+fair-mia prepare-pan18 \
+  --train-dir /data/pan18/train \
+  --test-dir /data/pan18/test \
+  --output-dir data/pan18_multilingual \
+  --languages en,es,ar \
+  --tokenizer-model-id Qwen/Qwen3-4B-Base \
+  --cache-dir artifacts/models
 ```
 
-The Pile does not provide demographic labels for fairness claims. The helper assigns synthetic `G0`/`G1` labels only so the pipeline can run; use PAN-style or another metadata-rich dataset for demographic conclusions.
+Preparation creates exact 256-token windows. Author identity, gender, language, variety, dataset, and source split remain explicit in JSONL.
+
+Variants can also be materialized manually:
+
+```bash
+fair-mia make-variants \
+  --members data/pan17_multilingual/members.jsonl \
+  --nonmembers data/pan17_multilingual/nonmembers.jsonl \
+  --output-dir data/variants/pan17_multilingual/seed_29 \
+  --seed 29
+```
+
+Only selected training windows are marked as members. Unselected windows are never relabeled as exposed training examples.
 
 ## Model Caching
 
-Model downloads happen only through explicit cache commands.
+Review and accept the Gemma license before caching it, then set `HF_TOKEN`.
 
-```powershell
-fair-mia cache-model --model-id EleutherAI/pythia-160m --cache-dir artifacts/models
-fair-mia cache-model --model-id EleutherAI/pythia-410m --cache-dir artifacts/models
+```bash
+bash scripts/cache_lora_assets.sh
 ```
 
-VM configs set `local_files_only=true`, so `run` fails clearly if a model has not been cached.
+Equivalent explicit commands:
 
-Recommended order:
-
-1. `EleutherAI/pythia-160m` for smoke tests
-2. `EleutherAI/pythia-410m` for the first main run
-3. `EleutherAI/pythia-1b` if throughput is acceptable
-4. `EleutherAI/pythia-2.8b` or `6.9b` only after smaller runs are stable
-
-## VM Runs
-
-Offline baseline:
-
-```powershell
-fair-mia run --config configs/offline_demo.json
+```bash
+fair-mia cache-model --model-id Qwen/Qwen3-4B-Base --cache-dir artifacts/models
+fair-mia cache-model --model-id allenai/OLMo-2-0425-1B --cache-dir artifacts/models
+fair-mia cache-model --model-id google/gemma-3-4b-pt --cache-dir artifacts/models
+fair-mia cache-model --model-id FacebookAI/xlm-roberta-base --task masked --cache-dir artifacts/models
 ```
 
-Real-model smoke run after preparing `data/pan_demo` and caching `pythia-160m`:
+Sweep scoring uses `local_files_only=true`; no experiment job downloads assets unexpectedly.
 
-```powershell
-fair-mia run --config configs/vm_smoke_pythia_160m.json
+## Study Workflow
+
+The primary experiment contract is [configs/lora_studies.yaml](configs/lora_studies.yaml).
+
+Resolve without running:
+
+```bash
+fair-mia plan --config configs/lora_studies.yaml
 ```
 
-Main Pythia mechanics run after preparing `data/pile_sample` and caching `pythia-410m` plus `pythia-160m`:
+Run the fully open smoke study first:
 
-```powershell
-fair-mia run --config configs/vm_main_pythia_410m.json
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --study smoke_olmo_lora
 ```
 
-Recommended PAN 2017 LoRA fine-tuning run:
+Run all enabled studies:
 
-```powershell
-fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 1000 --epochs 2 --max-length 256 --seed 0
-fair-mia run --config configs/vm_finetune_lora_pythia_160m.json
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml
 ```
+
+Resume the latest invocation with the same configuration hash:
+
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --resume
+```
+
+Failed hashes are left unchanged by default. Retry them explicitly:
+
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --resume --retry-failed
+```
+
+Regenerate reports without rerunning models:
+
+```bash
+fair-mia aggregate --run-dir outputs/YYYY-MM-DD/HHMMSS-configHash
+```
+
+The configured studies are:
+
+- `legacy_pythia_reference`
+- `smoke_olmo_lora`
+- `ablation_training_distribution_pan17`
+- `robustness_pan18`
+- `ablation_model_family`
+- `ablation_training_exposure`
+
+Gemma PAN 2018 and the full model-by-distribution matrix are present but disabled.
+
+## Attack Tiers
+
+The full evaluation set runs seven reusable-score attacks:
+
+- `loss`
+- `reference`
+- `zlib`
+- `min_k`
+- `neighborhood`
+- `min_k_plus_plus`
+- `wbc`
+
+The common intersectionally stratified audit subset runs all ten, adding:
+
+- `recall`
+- `samia`
+- `spv_mia`
+
+The audit cap is 100 samples per language × gender × membership cell: at most 1,600 PAN 2017 samples and 1,200 PAN 2018 samples.
 
 ## Outputs
 
-Each run writes to `outputs/<run_id>/`:
+Each invocation writes:
 
-- `results.jsonl`: per-sample attack scores and diagnostics
-- `summary.csv`: aggregate, per-group, PLD/gap metrics, plus balanced and majority-class accuracy columns
-- `overlap_report.json`: 4-gram, 7-gram, and 13-gram overlap diagnostics
-- `run_manifest.json`: config, seed, sample summary, attacks, scenarios, and version
+```text
+outputs/YYYY-MM-DD/<invocation_id>/
+  resolved_config.yaml
+  execution_plan.json
+  runs.jsonl
+  failures.jsonl
+  summary.csv
+  metrics.csv
+  comparisons.csv
+  report.md
+  plots/
+  studies/<study_name>/
+  jobs/<stable_job_hash>/
+```
 
-Read `summary.csv` first. Every attack/scenario should have `all`, `G0`, `G1`, and `gap:G0-G1` rows.
+Every job writes `status.json`, `stdout.log`, and `stderr.log` immediately. Failed runs include the resolved job, stage, GPU, timestamps, reason, and traceback.
 
-## Alignment With PRD/TRD
+`summary.csv` contains aggregate rows. `metrics.csv` contains aggregate, gender, language, variety, and intersectional rows. Statistical cells with fewer than 30 members or 30 nonmembers are marked suppressed. `comparisons.csv` records matched raw-versus-balanced AUC differences.
 
-- LLM target: real runs use Hugging Face causal LMs, with Pythia configs for the VM.
-- Multiple MIA families: all five baseline attacks are implemented and run through the same registry.
-- Binary attributes: canonical JSONL validation accepts only `G0` and `G1`.
-- Scenario comparison: configs cover pre-training, fine-tuning, and RAG.
-- Fuzzy boundary controls: overlap diagnostics are produced for every run.
-- General-result framing: outputs support cross-attack comparison instead of relying on one attack.
-- VM constraints: model downloads are explicit, sample caps are configurable, and full Pile download is avoided.
+## Interpretation
 
-## Troubleshooting
+- Treat Pythia runs as historical references, not part of the modern-model aggregate.
+- Report cross-attack and cross-seed patterns; do not promote one attack-specific result into a general conclusion.
+- PAN 2018 does not supply Portuguese in this experiment design. Portuguese analysis comes from PAN 2017.
+- The Pile helper remains a mechanics-only pretraining path because its subgroup labels are synthetic.
+- RAG execution remains intentionally blocked until context-conditioned retrieval scoring is implemented.
 
-- `ModuleNotFoundError` for `torch`, `transformers`, or `datasets`: run the VM setup script or `pip install -e ".[research]"`.
-- `prepare-pile-sample` fails with `Dataset scripts are no longer supported`: install a compatible Hugging Face Datasets release with `pip install "datasets<5"` and retry.
-- Model not found during `run`: execute `fair-mia cache-model` for the model ID and cache dir used by the config.
-- PAN conversion fails: confirm the CSV has text, group, and split columns, and exactly two group values or explicit `--group0-value` / `--group1-value`.
-- RAG benchmark execution fails with an unsupported error: this is intentional until retrieved context is injected into model scoring.
-- CUDA memory pressure: reduce sample count, lower `max_length`, use `pythia-160m`, or keep only one scenario per run.
-- Unexpected fairness signal on Pile sample: treat it as a pipeline/mechanics run unless the dataset has real sensitive attributes.
-
-For the full VM sequence, see [docs/VM_HANDOFF.md](docs/VM_HANDOFF.md). For dataset/model details, see [docs/DATASETS_AND_MODELS.md](docs/DATASETS_AND_MODELS.md).
+See [docs/VM_HANDOFF.md](docs/VM_HANDOFF.md) and [docs/DATASETS_AND_MODELS.md](docs/DATASETS_AND_MODELS.md) for operational details.

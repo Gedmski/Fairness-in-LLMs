@@ -12,8 +12,8 @@ dist/
 *.egg-info/
 
 # Generated benchmark artifacts
-# outputs/
+outputs/
 
 # Local VM data/model caches
 artifacts/
-# data/
+data/

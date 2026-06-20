@@ -51,7 +51,7 @@ def score_samples_for_scenario(
                     raw_score=score.raw_score,
                     membership_score=score.membership_score,
                     diagnostics=diagnostics,
+                    attributes=dict(sample.attributes),
                 )
             )
     return records
-

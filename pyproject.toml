@@ -4,25 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fair-mia"
-version = "0.1.0"
-description = "Offline scaffold for fairness-aware membership inference benchmarking in LLM workflows."
+version = "0.2.0"
+description = "Study-driven fairness-aware membership inference benchmarking for fine-tuned LLMs."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
 research = [
-  "accelerate",
+  "accelerate>=1.1",
+  "bitsandbytes>=0.45",
   "datasets<5",
+  "huggingface-hub>=0.30",
+  "matplotlib>=3.8",
   "numpy",
   "pandas",
-  "peft",
+  "peft>=0.15",
+  "PyYAML>=6",
   "pytest",
   "safetensors",
   "scikit-learn",
+  "sentencepiece",
   "tqdm",
   "torch",
-  "transformers",
+  "transformers>=4.51",
 ]
 
 [project.scripts]

@@ -9,6 +9,7 @@ from fair_mia.types import AttackScore, TextSample
 
 class ReferenceAttack(MembershipInferenceAttack):
     name = "reference"
+    requires_reference_model = True
 
     def score(self, sample: TextSample, target_model: LanguageModelAdapter, reference_model: LanguageModelAdapter | None = None) -> AttackScore:
         if reference_model is None:
@@ -22,4 +23,3 @@ class ReferenceAttack(MembershipInferenceAttack):
             membership_score=-raw,
             diagnostics={"target_loss": target_loss, "reference_loss": reference_loss},
         )
-

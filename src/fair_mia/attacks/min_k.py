@@ -30,6 +30,9 @@ class MinKProbAttack(MembershipInferenceAttack):
             self.name,
             raw_score=raw,
             membership_score=-raw,
-            diagnostics={"k_percent": self.k_percent, "selected_tokens": selected},
+            diagnostics={
+                "k_percent": self.k_percent,
+                "selected_tokens": selected,
+                "target_loss": token_scores.mean_loss,
+            },
         )
-

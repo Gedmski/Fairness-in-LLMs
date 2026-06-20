@@ -30,29 +30,35 @@ The benchmark should support three scenario classes from the start:
 
 #### 2.3 Model Family Assumptions
 - Initial target models should be open causal LMs suitable for text MIA experiments
-- The Pythia family is a practical default because it aligns with the paper set and spans multiple model sizes
-- A scale ladder should be used instead of forcing all experiments onto the largest model
+- Qwen3-4B-Base is the primary multilingual fine-tuning model
+- Gemma-3-4B-PT is the gated replication model and OLMo-2-1B is the fully open smoke model
+- Pythia remains a historical paper-aligned baseline rather than the default modern-model target
+- A scale/family ladder should be used instead of forcing all experiments onto the largest model
 
 Recommended first-pass target sizes:
-- Small: 160M to 1.4B
-- Medium: 2.8B to 6.9B
-- Large or optional: 12B, only if runtime and memory allow
+- Small/open smoke: OLMo-2-1B
+- Primary: Qwen3-4B-Base
+- Replication: Gemma-3-4B-PT
+- Larger models remain optional after the 1B/4B study matrix is stable
 
 ### 3. Data Pipeline Requirements
 #### 3.1 Supported Datasets
 - The Pile for pre-training-oriented member/non-member evaluation
-- PAN 2018 for demographic text experiments
-- Optional additional text datasets with explicit binary sensitive attributes
+- PAN 2017 multilingual data for English, Spanish, Portuguese, and Arabic
+- PAN 2018 robustness data for English, Spanish, and Arabic
+- Optional additional text datasets with explicit sensitive attributes
 
 #### 3.2 Sample Construction
 - Samples must be built from fixed token windows instead of variable free-form lengths
 - Window size must be configurable so experiments can test sensitivity to sequence length
 - Train, validation, and test splits must be reproducible from configuration
 
-#### 3.3 Binary Attribute Handling
-- The primary benchmark uses binary protected attributes only
+#### 3.3 Attribute Handling
+- Binary `G0`/`G1` gender reporting remains mandatory
+- Language, regional variety, and gender-by-language intersections are explicit reporting dimensions
 - Sensitive attributes must come from dataset metadata, not ad hoc inference from text
 - Results must always include separate values for `G0` and `G1`, not only a single disparity score
+- Sparse cells with fewer than 30 members or 30 nonmembers must be suppressed
 
 #### 3.4 Overlap and Decontamination Controls
 The data pipeline must explicitly handle fuzzy membership boundaries highlighted in the LLM paper.
@@ -103,11 +109,11 @@ Each attack must implement a common interface:
 - The default implementation should be treated as one baseline attack, not the main project claim
 
 #### 5.4 Extension Support
-The attack registry must allow adding:
-- Shadow-model attacks
-- White-box attacks
-- Embedding-based variants
-- Scenario-specific attacks for RAG or fine-tuned models
+The fine-tuning registry must expose ten attacks through the common interface:
+- `loss`, `reference`, `zlib`, `min_k`, `neighborhood`
+- `min_k_plus_plus`, `wbc`, `recall`, `samia`, `spv_mia`
+
+Each attack declares model capabilities such as token distributions, conditional scoring, generation, or reference-model access. Incompatible combinations fail explicitly.
 
 ### 6. Thresholding and Fairness Evaluation
 The fairness papers indicate that a single global attack threshold can hide subgroup-specific leakage patterns.
@@ -121,13 +127,19 @@ Primary reporting format:
 - `metric(G0)`
 - `metric(G1)`
 - `gap = |metric(G0) - metric(G1)|`
+- per-language and per-variety metrics
+- macro average, worst group, maximum pairwise gap, and disparity ratio
+- gender-by-language intersection metrics
 
 ### 7. Metrics and Reporting
 #### 7.1 Privacy Metrics
 - AUC-ROC
+- AUC-PR
 - TPR@1%FPR
 - TPR@0.1%FPR
+- TPR@5%FPR and FPR@90/95/99%TPR
 - Attack accuracy when a thresholded decision is used
+- Precision, recall, F1, MCC, attack advantage, Brier score, and expected calibration error
 
 #### 7.2 Fairness Metrics
 - Privacy-leakage disparity on each primary privacy metric
@@ -136,11 +148,11 @@ Primary reporting format:
 
 #### 7.3 Utility Metrics by Scenario
 - Pre-training: loss, perplexity, and token-level likelihood summaries
-- Fine-tuning: task accuracy, F1, or other task-specific utility metrics
+- Fine-tuning: model loss and perplexity; task-specific metrics may be added when a supervised task is defined
 - RAG: answer quality, retrieval attribution, and retrieval exposure statistics
 
 #### 7.4 Statistical Reliability
-- Main tables should include confidence intervals or bootstrap estimates
+- Main tables should include author-clustered 95% bootstrap intervals
 - Repeated runs should be supported for stochastic attacks or training settings
 
 ### 8. Defense Modules
@@ -160,28 +172,31 @@ For each defense setting, the system must report:
 
 ### 9. Experiment Management
 The experiment layer must support:
-- Configuration-driven runs
+- YAML defaults, named studies, controlled overrides, and study-local sweeps
 - Scenario, dataset, model, and attack sweeps
 - Reproducible random seeds
 - Structured outputs for tables and plots
+- Stable training/scoring job hashes, adapter reuse, two-GPU scheduling, durable failure records, and resume
 
 Suggested top-level experiment axes:
 - Scenario: pre-training, fine-tuning, RAG
-- Dataset: The Pile, PAN 2018, optional demographic text datasets
+- Dataset: PAN 2017, PAN 2018, The Pile mechanics baseline, optional demographic text datasets
 - Model scale: small, medium, large
 - Attack family
 - Defense setting
 - Protected attribute pair
 
-### 10. Minimum Viable Benchmark
-The first complete benchmark release should include:
+### 10. Current LoRA Release
+The fine-tuning release includes:
 
-1. One pre-training baseline on open LMs trained on The Pile
-2. One fine-tuning setting on PAN 2018 or another demographic text dataset
-3. One RAG setting built from a controlled text corpus
-4. The five baseline attacks
-5. Per-group and gap-based reporting for one binary protected attribute
-6. At least one defense comparison in a trainable scenario
+1. Historical pre-training/Pythia references kept separate from modern runs
+2. Controlled LoRA studies on PAN 2017 and PAN 2018
+3. Qwen, Gemma, and OLMo model-family coverage
+4. The ten fine-tuning attacks
+5. Binary, multi-class, intersectional, and gap-based reporting
+6. Reproducible YAML studies, resumable VM execution, and structured reports
+
+RAG and defense comparisons remain subsequent releases and must not be represented as implemented benchmark evidence.
 
 ### 11. Output Artifacts
 Required outputs for each experiment:

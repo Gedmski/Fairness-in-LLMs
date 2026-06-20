@@ -16,7 +16,7 @@ The paper "On the Privacy Risks of Algorithmic Fairness" shows that fairness int
 At the same time, "Do Membership Inference Attacks Work on Large Language Models?" shows that MIAs on pre-trained LLMs are often near random on large-scale corpora such as The Pile because of few training iterations and fuzzy member/non-member boundaries. That result does not remove the fairness question. It changes the research focus: the project should compare settings where memorization and subgroup disparity may become more visible, especially fine-tuning and RAG.
 
 ### 3. Core Research Questions
-1. Do MIAs affect binary demographic subgroups differently in LLM-related text settings?
+1. Do MIAs affect binary gender groups, multilingual groups, and gender-by-language intersections differently in LLM-related text settings?
 2. Which scenario exposes fairness disparities most reliably: pre-training, fine-tuning, or RAG?
 3. Which MIA families lead to stable, scenario-level conclusions, and which findings are attack-specific?
 4. Which model scales and deployment settings are most affected by privacy unfairness?
@@ -26,7 +26,8 @@ At the same time, "Do Membership Inference Attacks Work on Large Language Models
 #### In Scope
 - Text-based LLMs and language modeling workflows only
 - Multiple MIA families, including but not limited to mask-based attacks
-- Binary sensitive attributes for the primary benchmark
+- Binary gender reporting as a mandatory compatibility benchmark
+- Multi-class language and regional-variety reporting, including gender-by-language intersections
 - Disaggregated reporting for each subgroup, not only a single aggregate gap value
 - Comparison across pre-training, fine-tuning, and RAG settings
 - Fairness analysis of both attacks and defenses
@@ -58,18 +59,22 @@ At the same time, "Do Membership Inference Attacks Work on Large Language Models
 1. The Pile
    - Used for pre-training-oriented LLM evaluation and member/non-member construction
    - Important for reproducing the LLM setting studied in the paper set
-2. PAN 2018
-   - Used as the primary demographics-based text dataset for downstream subgroup analysis
-   - Default protected attribute should come from explicit binary metadata available in the chosen PAN 2018 subset, such as gender if that subset is used
+2. PAN 2017
+   - Primary multilingual fine-tuning dataset for English, Spanish, Portuguese, and Arabic
+   - Supplies explicit binary gender and regional language-variety metadata
+3. PAN 2018
+   - Robustness dataset for English, Spanish, and Arabic
+   - Supplies explicit binary gender metadata; Portuguese conclusions come from PAN 2017
 
 #### Additional Dataset Rule
 - Additional text datasets may be added if they contain explicit sensitive or demographic metadata relevant to fairness auditing
 - Any added dataset must support clear member/non-member construction and binary subgroup definition for the main benchmark
 
-#### Binary Attribute Rule
-- The main benchmark keeps binary attributes at all times
-- Every result must be reported separately for the two groups, for example `male` and `female`, in addition to the disparity gap
-- If a dataset contains multi-class attributes, those attributes must either be converted into a justified binary split for the primary benchmark or moved to secondary analysis
+#### Attribute Reporting Rule
+- Every result must preserve separate `G0` and `G1` gender values and their disparity gap
+- Language and regional origin/variety remain explicit multi-class attributes; they must not be collapsed into artificial binary labels
+- Main reports include marginal gender, language, and variety results plus gender-by-language intersections when cell sizes are sufficient
+- Cells with fewer than 30 members or 30 nonmembers are suppressed from statistical comparison
 
 #### Data Integrity Rule
 - Do not infer race or other sensitive labels from free text when the dataset does not provide them
@@ -86,10 +91,17 @@ The first implementation round must cover at least the following attacks:
 - Neighborhood or mask-based attack
 
 #### Extension Requirement
-The framework must remain extensible to additional MIA families, such as:
-- Shadow-model or classifier-based attacks when applicable
-- White-box or gradient-based attacks when model access allows
-- Embedding-based or semantic similarity variants
+The fine-tuning benchmark includes ten registered attacks:
+- LOSS
+- Reference
+- Zlib
+- Min-k%
+- Neighborhood
+- Min-k%++
+- Window-based comparison
+- ReCaLL
+- SaMIA
+- SPV-MIA
 
 #### Reporting Rule
 - The project should claim general results across attack families whenever possible
@@ -111,6 +123,7 @@ The framework must remain extensible to additional MIA families, such as:
 - Use subgroup-disaggregated evaluation, not only a single global threshold
 - Track both aggregate risk and group-specific risk
 - Use confidence intervals or bootstrap estimates for main comparisons
+- Calibrate thresholds on author-disjoint calibration records rather than selecting thresholds on the final test set
 - Audit whether observed attack success could be explained by distribution shift or overlap artifacts
 
 ### 9. Defense Analysis
@@ -127,7 +140,7 @@ The project should report both:
 ### 10. Success Criteria
 The project is successful if it:
 - Identifies the scenario that best exposes fairness-related MIA behavior
-- Produces subgroup-disaggregated results for binary attributes across multiple attacks
+- Produces subgroup-disaggregated binary, multi-class, and intersectional results across multiple attacks
 - Distinguishes attack-specific findings from robust, cross-attack findings
 - Determines whether pre-training, fine-tuning, or RAG leads to the clearest fairness signal
 - Produces conclusions that are specific to LLMs, not only inherited from tabular or classifier settings

@@ -12,5 +12,6 @@ try {
   Write-Warning "GPU probe warning: PyTorch could not fully initialize CUDA; continuing with setup."
 }
 .\.venv\Scripts\python.exe -m unittest discover -s tests
+.\.venv\Scripts\python.exe -m fair_mia.cli doctor --config configs/lora_studies.yaml
 
-Write-Host "VM setup complete. No models were downloaded by this script."
+Write-Host "VM setup complete. Review doctor output before caching models or starting studies."

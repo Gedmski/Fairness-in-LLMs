@@ -2,11 +2,14 @@ import unittest
 
 from fair_mia.metrics import (
     auc_roc,
+    auc_pr,
     best_threshold_accuracy,
     best_threshold_balanced_accuracy,
     majority_class_accuracy,
     privacy_leakage_disparity,
     tpr_at_fpr,
+    fpr_at_tpr,
+    select_threshold,
 )
 
 
@@ -15,6 +18,7 @@ class MetricTests(unittest.TestCase):
         labels = [True, True, False, False]
         scores = [0.9, 0.8, 0.2, 0.1]
         self.assertEqual(auc_roc(labels, scores), 1.0)
+        self.assertEqual(auc_pr(labels, scores), 1.0)
 
     def test_tpr_at_fpr_known_ordering(self):
         labels = [True, True, False, False]
@@ -38,6 +42,16 @@ class MetricTests(unittest.TestCase):
 
     def test_privacy_leakage_disparity(self):
         self.assertAlmostEqual(privacy_leakage_disparity({"G0": 0.7, "G1": 0.4}), 0.3)
+
+    def test_fpr_at_tpr_known_ordering(self):
+        labels = [True, True, False, False]
+        scores = [0.9, 0.8, 0.2, 0.1]
+        self.assertEqual(fpr_at_tpr(labels, scores, 1.0), 0.0)
+
+    def test_threshold_selection_is_deterministic(self):
+        labels = [True, False, True, False]
+        scores = [0.9, 0.7, 0.6, 0.1]
+        self.assertEqual(select_threshold(labels, scores), 0.9)
 
 
 if __name__ == "__main__":

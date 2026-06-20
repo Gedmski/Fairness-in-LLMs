@@ -20,7 +20,10 @@ class NeighborhoodAttack(MembershipInferenceAttack):
 
     def score(self, sample: TextSample, target_model: LanguageModelAdapter, reference_model: LanguageModelAdapter | None = None) -> AttackScore:
         target_loss = target_model.score_tokens(sample.text, sample).mean_loss
-        neighbor_texts = [self._perturb(sample.text, index) for index in range(self.neighbors)]
+        if hasattr(target_model, "multilingual_neighbors"):
+            neighbor_texts = list(target_model.multilingual_neighbors(sample.text, self.neighbors))
+        else:
+            neighbor_texts = [self._perturb(sample.text, index) for index in range(self.neighbors)]
         neighbor_losses = [target_model.score_tokens(text, sample).mean_loss for text in neighbor_texts]
         mean_neighbor_loss = sum(neighbor_losses) / len(neighbor_losses)
         raw = target_loss - mean_neighbor_loss
@@ -39,4 +42,3 @@ class NeighborhoodAttack(MembershipInferenceAttack):
         position = int(digest[:8], 16) % len(tokens)
         tokens[position] = f"{tokens[position]}_alt{neighbor_index}"
         return " ".join(tokens)
-

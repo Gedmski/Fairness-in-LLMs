@@ -13,6 +13,10 @@ class DatasetConfig:
     members_path: Path
     nonmembers_path: Path
     default_scenario: str = "offline"
+    calibration_members_path: Path | None = None
+    calibration_nonmembers_path: Path | None = None
+    evaluation_variant: str = "default"
+    evaluation_tier: str = "full"
 
 
 @dataclass(frozen=True)
@@ -33,6 +37,9 @@ class ModelConfig:
     batch_size: int = 1
     local_files_only: bool = False
     trust_remote_code: bool = False
+    adapter_path: Path | None = None
+    load_in_4bit: bool = False
+    perturbation_model_id: str = "FacebookAI/xlm-roberta-base"
 
 
 @dataclass(frozen=True)
@@ -65,7 +72,7 @@ class BenchmarkConfig:
 
 def load_config(path: str | Path) -> BenchmarkConfig:
     config_path = Path(path)
-    with config_path.open("r", encoding="utf-8") as handle:
+    with config_path.open("r", encoding="utf-8-sig") as handle:
         raw = json.load(handle)
 
     base_dir = config_path.parent.parent if config_path.parent.name == "configs" else Path.cwd()
@@ -82,6 +89,14 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         members_path=resolve_path(dataset_raw["members_path"]),
         nonmembers_path=resolve_path(dataset_raw["nonmembers_path"]),
         default_scenario=dataset_raw.get("default_scenario", "offline"),
+        calibration_members_path=resolve_path(dataset_raw["calibration_members_path"])
+        if dataset_raw.get("calibration_members_path")
+        else None,
+        calibration_nonmembers_path=resolve_path(dataset_raw["calibration_nonmembers_path"])
+        if dataset_raw.get("calibration_nonmembers_path")
+        else None,
+        evaluation_variant=str(dataset_raw.get("evaluation_variant", "default")),
+        evaluation_tier=str(dataset_raw.get("evaluation_tier", "full")),
     )
     model = ModelConfig(
         backend=model_raw.get("backend", "fake"),
@@ -100,6 +115,11 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         batch_size=int(model_raw.get("batch_size", 1)),
         local_files_only=bool(model_raw.get("local_files_only", False)),
         trust_remote_code=bool(model_raw.get("trust_remote_code", False)),
+        adapter_path=resolve_path(model_raw["adapter_path"]) if model_raw.get("adapter_path") else None,
+        load_in_4bit=bool(model_raw.get("load_in_4bit", False)),
+        perturbation_model_id=str(
+            model_raw.get("perturbation_model_id", "FacebookAI/xlm-roberta-base")
+        ),
     )
     rag = RagConfig(top_k=int(rag_raw.get("top_k", 2)))
     overlap = OverlapConfig(
@@ -134,12 +154,22 @@ def validate_config(config: BenchmarkConfig) -> None:
         raise FileNotFoundError(f"Members file not found: {config.dataset.members_path}")
     if not config.dataset.nonmembers_path.exists():
         raise FileNotFoundError(f"Non-members file not found: {config.dataset.nonmembers_path}")
+    if bool(config.dataset.calibration_members_path) != bool(config.dataset.calibration_nonmembers_path):
+        raise ValueError("Both calibration_members_path and calibration_nonmembers_path must be provided together.")
+    for calibration_path in (
+        config.dataset.calibration_members_path,
+        config.dataset.calibration_nonmembers_path,
+    ):
+        if calibration_path is not None and not calibration_path.exists():
+            raise FileNotFoundError(f"Calibration file not found: {calibration_path}")
     if config.model.backend not in {"fake", "hf"}:
         raise ValueError("model.backend must be either 'fake' or 'hf'.")
     if config.model.max_length <= 0:
         raise ValueError("model.max_length must be positive.")
     if config.model.batch_size <= 0:
         raise ValueError("model.batch_size must be positive.")
+    if config.model.adapter_path is not None and not config.model.adapter_path.exists():
+        raise FileNotFoundError(f"LoRA adapter not found: {config.model.adapter_path}")
     if config.overlap.max_nonmembers <= 0:
         raise ValueError("overlap.max_nonmembers must be positive.")
     if config.overlap.max_members_per_nonmember <= 0:

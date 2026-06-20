@@ -1,5 +1,11 @@
 # Supervisor Update: PAN 2017 Fine-Tuning MIA Benchmark
 
+> Historical-result note: this report describes the June 2026 Pythia-160M
+> experiments, which ran the original five attacks. The current repository now
+> registers ten attacks and uses the YAML LoRA study framework documented in
+> `README.md`. These historical results remain references and are not pooled
+> with the modern Qwen, Gemma, or OLMo studies.
+
 ## Executive Summary
 
 This document summarizes the current state of the `Fairness-in-LLMs` benchmark, the methodology implemented in the repository, and the results from the latest three-seed PAN 2017 fine-tuning experiments:
@@ -153,7 +159,7 @@ This does not prove the dataset is perfectly clean, but it does reduce the risk 
 
 ## MIA Types Currently Present in the Benchmark
 
-The benchmark currently implements five baseline MIA families:
+The historical Pythia experiment reported here used five baseline MIA families:
 
 | Attack | Type | High-level idea |
 |---|---|---|

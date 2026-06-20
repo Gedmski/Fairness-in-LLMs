@@ -15,5 +15,6 @@ for i in range(torch.cuda.device_count()):
     print("gpu", i, torch.cuda.get_device_name(i))
 PY
 ./.venv/bin/python -m unittest discover -s tests
+./.venv/bin/python -m fair_mia.cli doctor --config configs/lora_studies.yaml
 
-echo "VM setup complete. No models were downloaded by this script."
+echo "VM setup complete. Review doctor output before caching models or starting studies."

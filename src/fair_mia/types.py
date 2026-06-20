@@ -14,6 +14,7 @@ class TextSample:
     group: str
     scenario: str
     metadata: dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, str] = field(default_factory=dict)
 
     def with_scenario(self, scenario: str) -> "TextSample":
         return replace(self, scenario=scenario)
@@ -23,6 +24,8 @@ class TextSample:
 class TokenScores:
     tokens: list[str]
     losses: list[float]
+    distribution_means: list[float] = field(default_factory=list)
+    distribution_stds: list[float] = field(default_factory=list)
 
     @property
     def mean_loss(self) -> float:
@@ -49,10 +52,10 @@ class AttackRecord:
     raw_score: float
     membership_score: float
     diagnostics: dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class RunResult:
     records: list[AttackRecord]
     run_dir: str
-

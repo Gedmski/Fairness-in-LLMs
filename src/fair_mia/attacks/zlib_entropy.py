@@ -16,5 +16,9 @@ class ZlibEntropyAttack(MembershipInferenceAttack):
         mean_loss = target_model.score_tokens(sample.text, sample).mean_loss
         compressed_size = max(len(zlib.compress(sample.text.encode("utf-8"))), 1)
         raw = mean_loss / compressed_size
-        return AttackScore(self.name, raw_score=raw, membership_score=-raw, diagnostics={"compressed_size": compressed_size})
-
+        return AttackScore(
+            self.name,
+            raw_score=raw,
+            membership_score=-raw,
+            diagnostics={"compressed_size": compressed_size, "target_loss": mean_loss},
+        )

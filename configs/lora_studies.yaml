@@ -1,0 +1,187 @@
+datasets:
+  pan17_multilingual:
+    members_path: data/pan17_multilingual/members.jsonl
+    nonmembers_path: data/pan17_multilingual/nonmembers.jsonl
+    variants_dir: data/variants/pan17_multilingual
+    languages: [en, es, pt, ar]
+  pan18_multilingual:
+    members_path: data/pan18_multilingual/members.jsonl
+    nonmembers_path: data/pan18_multilingual/nonmembers.jsonl
+    variants_dir: data/variants/pan18_multilingual
+    languages: [en, es, ar]
+  pan17_legacy:
+    members_path: data/pan_demo/members.jsonl
+    nonmembers_path: data/pan_demo/nonmembers.jsonl
+    variants_dir: data/variants/pan17_legacy
+    historical_outputs:
+      - outputs/vm_finetune_lora_pythia_160m_seed29_ep4
+      - outputs/vm_finetune_lora_pythia_160m_seed41_ep4
+      - outputs/vm_finetune_lora_pythia_160m_seed53_ep4
+
+models:
+  qwen3_4b:
+    model_id: Qwen/Qwen3-4B-Base
+    reference_model_id: Qwen/Qwen3-4B-Base
+    cache_dir: artifacts/models
+    load_in_4bit: true
+  gemma3_4b:
+    model_id: google/gemma-3-4b-pt
+    reference_model_id: google/gemma-3-4b-pt
+    cache_dir: artifacts/models
+    gated: true
+    load_in_4bit: true
+  olmo2_1b:
+    model_id: allenai/OLMo-2-0425-1B
+    reference_model_id: allenai/OLMo-2-0425-1B
+    cache_dir: artifacts/models
+  pythia_legacy:
+    model_id: EleutherAI/pythia-160m
+    reference_model_id: EleutherAI/pythia-160m
+    cache_dir: artifacts/models
+
+attacks:
+  full:
+    - loss
+    - reference
+    - zlib
+    - min_k
+    - neighborhood
+    - min_k_plus_plus
+    - wbc
+  audit:
+    - loss
+    - reference
+    - zlib
+    - min_k
+    - neighborhood
+    - min_k_plus_plus
+    - wbc
+    - recall
+    - samia
+    - spv_mia
+
+finetuning:
+  method: lora
+  rank: 16
+  alpha: 32
+  dropout: 0.05
+  learning_rate: 0.0002
+  max_length: 256
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  gradient_checkpointing: true
+  epochs: 4
+  max_train_samples: 0
+
+evaluation:
+  calibration_fraction: 0.2
+  audit_cap_per_cell: 100
+  min_cell_members: 30
+  bootstrap_replicates: 1000
+
+runtime:
+  outputs_dir: outputs
+  adapters_dir: artifacts/adapters
+  gpu_ids: [0, 1]
+  continue_on_error: true
+  local_files_only: true
+
+reporting:
+  generate_plots: true
+
+defaults:
+  dataset: pan17_multilingual
+  model: qwen3_4b
+  training_variant: balanced
+  evaluation_variant: balanced_audit
+  seed: 29
+  epochs: 4
+  audit_cap_per_cell: 100
+
+studies:
+  legacy_pythia_reference:
+    description: Index the existing Pythia PAN 2017 runs without combining them with new results.
+    historical: true
+    overrides:
+      dataset: pan17_legacy
+      model: pythia_legacy
+    sweep: {}
+
+  smoke_olmo_lora:
+    description: One capped end-to-end VM validation using the fully open OLMo 2 model.
+    overrides:
+      model: olmo2_1b
+      training_variant: balanced
+      evaluation_variant: balanced_audit
+      seed: 29
+      epochs: 1
+      max_train_samples: 64
+      audit_cap_per_cell: 8
+    sweep: {}
+
+  ablation_training_distribution_pan17:
+    description: Controlled 3x2 raw, size-matched, and balanced PAN 2017 study.
+    overrides:
+      dataset: pan17_multilingual
+      model: qwen3_4b
+      epochs: 4
+    sweep:
+      training_variant: [raw_full, size_matched_random, balanced]
+      evaluation_variant: [native_raw, balanced_audit]
+      seed: [29, 41, 53]
+
+  robustness_pan18:
+    description: Repeat the controlled distribution experiment on PAN 2018.
+    overrides:
+      dataset: pan18_multilingual
+      model: qwen3_4b
+      epochs: 4
+    sweep:
+      training_variant: [raw_full, size_matched_random, balanced]
+      evaluation_variant: [native_raw, balanced_audit]
+      seed: [29, 41, 53]
+
+  ablation_model_family:
+    description: Compare contemporary multilingual/open model families under matched data.
+    overrides:
+      dataset: pan17_multilingual
+      training_variant: balanced
+      epochs: 4
+    sweep:
+      model: [qwen3_4b, gemma3_4b, olmo2_1b]
+      evaluation_variant: [native_raw, balanced_audit]
+      seed: [29, 41, 53]
+
+  ablation_training_exposure:
+    description: Isolate one, two, and four epoch exposure while reusing matching adapters.
+    overrides:
+      dataset: pan17_multilingual
+      model: qwen3_4b
+      training_variant: balanced
+    sweep:
+      epochs: [1, 2, 4]
+      evaluation_variant: [native_raw, balanced_audit]
+      seed: [29, 41, 53]
+
+  optional_gemma_pan18:
+    description: Disabled extension for Gemma replication on PAN 2018.
+    enabled: false
+    overrides:
+      dataset: pan18_multilingual
+      model: gemma3_4b
+      training_variant: balanced
+      evaluation_variant: balanced_audit
+    sweep:
+      seed: [29, 41, 53]
+
+  optional_full_distribution_models:
+    description: Disabled full distribution matrix for all model families.
+    enabled: false
+    overrides:
+      dataset: pan17_multilingual
+      epochs: 4
+    sweep:
+      model: [qwen3_4b, gemma3_4b, olmo2_1b]
+      training_variant: [raw_full, size_matched_random, balanced]
+      evaluation_variant: [native_raw, balanced_audit]
+      seed: [29, 41, 53]

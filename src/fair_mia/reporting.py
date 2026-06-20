@@ -24,21 +24,24 @@ def write_results_jsonl(records: list[AttackRecord], path: str | Path) -> None:
             handle.write(json.dumps(asdict(record), sort_keys=True) + "\n")
 
 
-def write_summary_csv(records: list[AttackRecord], path: str | Path) -> None:
-    rows = summarize_records(records)
-    fieldnames = [
-        "scenario",
-        "attack",
-        "scope",
-        "samples",
-        "auc_roc",
-        "tpr_at_1_fpr",
-        "tpr_at_0_1_fpr",
-        "accuracy",
-        "balanced_accuracy",
-        "majority_class_accuracy",
-        "pld_auc_roc",
-        "pld_accuracy",
+def write_summary_csv(
+    records: list[AttackRecord],
+    path: str | Path,
+    calibration_records: list[AttackRecord] | None = None,
+    *,
+    min_cell_members: int = 30,
+    bootstrap_replicates: int = 1000,
+    seed: int = 0,
+) -> None:
+    rows = summarize_records(
+        records,
+        calibration_records,
+        min_cell_members=min_cell_members,
+        bootstrap_replicates=bootstrap_replicates,
+        seed=seed,
+    )
+    fieldnames = list(rows[0]) if rows else [
+        "scenario", "attack", "dimension", "scope", "samples", "members", "nonmembers"
     ]
     with Path(path).open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)

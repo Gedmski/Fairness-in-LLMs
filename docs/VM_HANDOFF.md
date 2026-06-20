@@ -1,110 +1,151 @@
-# VM Handoff
+# VM Handoff: LoRA Studies
 
-## Prerequisites
+## Required VM
 
+- Linux recommended
 - Python 3.10+
-- Two NVIDIA L4 GPUs for the intended profile
-- CUDA-compatible PyTorch installation through `pip install -e ".[research]"`
-- Disk space for model caches under `artifacts/models`
-- Dataset space under `data/`
+- Two NVIDIA L4 GPUs
+- At least 150 GB free disk
+- PAN 2017 and PAN 2018 archives supplied separately
+- Hugging Face token for gated Gemma runs
 
-## Setup
-
-Windows PowerShell:
-
-```powershell
-.\scripts\vm_setup.ps1
-```
-
-Linux shell:
+## 1. Setup
 
 ```bash
+git clone <repository-url>
+cd Fairness-in-LLMs
 bash scripts/vm_setup.sh
 ```
 
-These scripts install dependencies and run offline tests. They do not download models.
+Do not continue until `doctor` reports the expected GPUs and no unexplained readiness failures:
 
-## Data Preparation
-
-For PAN-style local data:
-
-```powershell
-fair-mia prepare-pan --input-file data/raw/pan.csv --output-dir data/pan_demo --group-field gender --member-split train
+```bash
+./.venv/bin/python -m fair_mia.cli doctor --config configs/lora_studies.yaml
 ```
 
-If the directory contains exactly one CSV, this equivalent form also works:
+Missing PAN canonical files and model caches are expected before the preparation and caching steps.
 
-```powershell
-fair-mia prepare-pan --input-dir data/raw/pan --output-dir data/pan_demo --group-field gender --member-split train
+## 2. Cache Models
+
+After accepting the Gemma terms and exporting `HF_TOKEN`:
+
+```bash
+bash scripts/cache_lora_assets.sh
 ```
 
-For a capped Pile mechanics sample:
+The script caches Qwen3-4B-Base, OLMo-2-1B, Gemma-3-4B-PT when authorized, and the XLM-R masked model used by the multilingual neighborhood attack.
 
-```powershell
-fair-mia prepare-pile-sample --output-dir data/pile_sample --max-members 500 --max-nonmembers 500 --cache-dir artifacts/datasets
+## 3. Prepare PAN Data
+
+```bash
+./.venv/bin/python -m fair_mia.cli prepare-pan17 \
+  --train-dir /data/pan17/train \
+  --test-dir /data/pan17/test \
+  --output-dir data/pan17_multilingual \
+  --languages en,es,pt,ar \
+  --cache-dir artifacts/models
+
+./.venv/bin/python -m fair_mia.cli prepare-pan18 \
+  --train-dir /data/pan18/train \
+  --test-dir /data/pan18/test \
+  --output-dir data/pan18_multilingual \
+  --languages en,es,ar \
+  --cache-dir artifacts/models
 ```
 
-PAN data may require manual access approval. Do not infer sensitive attributes from free text; use explicit metadata.
+Verify:
 
-For PAN 2017 English XML plus `truth.txt`, prepare balanced 256-token windows with:
-
-```powershell
-fair-mia prepare-pan17-xml --train-dir C:\path\to\pan17-author-profiling-training-dataset-2017-03-10 --test-dir C:\path\to\pan17-author-profiling-test-dataset-2017-03-16 --output-dir data/pan_demo --lang en --tokenizer-model-id EleutherAI/pythia-160m --window-tokens 256 --max-windows-per-bucket 250 --seed 0
+```bash
+./.venv/bin/python -m fair_mia.cli doctor --config configs/lora_studies.yaml
 ```
 
-## Model Caching
+## 4. Resolve the Experiment Graph
 
-Download models only with explicit cache commands:
-
-```powershell
-fair-mia cache-model --model-id EleutherAI/pythia-160m --cache-dir artifacts/models
-fair-mia cache-model --model-id EleutherAI/pythia-410m --cache-dir artifacts/models
+```bash
+./.venv/bin/python -m fair_mia.cli plan --config configs/lora_studies.yaml
 ```
 
-Run configs use `local_files_only=true`, so benchmark execution will fail clearly if a model has not been cached.
+Review the experiment count, training-job count, scoring-job count, stable adapter paths, and GPU list before starting.
 
-## Runs
+## 5. Smoke Test
 
-Offline validation:
-
-```powershell
-fair-mia run --config configs/offline_demo.json
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study smoke_olmo_lora
 ```
 
-Real-model smoke run:
+This is the required live VM validation. It cannot be completed on the offline development machine because it requires cached model weights and CUDA.
 
-```powershell
-fair-mia run --config configs/vm_smoke_pythia_160m.json
+Check:
+
+- Adapter directory contains `adapter_config.json`, adapter weights, tokenizer, `training_config.json`, `training_history.json`, and `environment.json`.
+- Both full and audit scoring jobs succeeded.
+- Ten attacks appear in the audit output.
+- `failures.jsonl` is empty.
+
+## 6. Main Studies
+
+Run one study:
+
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study ablation_training_distribution_pan17
 ```
 
-LoRA fine-tuning:
+Run all enabled studies:
 
-```powershell
-fair-mia finetune-lora --base-model-id EleutherAI/pythia-160m --train-jsonl data/pan_demo/members.jsonl --output-dir artifacts/adapters/pythia_160m_lora --cache-dir artifacts/models --max-train-samples 1000 --epochs 2 --max-length 256 --seed 0
-fair-mia run --config configs/vm_finetune_lora_pythia_160m.json
+```bash
+bash scripts/run_lora_studies.sh
 ```
 
-Main Pythia run:
+The runner launches at most one isolated subprocess per configured GPU. Each subprocess receives one physical GPU through `CUDA_VISIBLE_DEVICES`.
 
-```powershell
-fair-mia run --config configs/vm_main_pythia_410m.json
+## 7. Resume and Recovery
+
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --resume
 ```
 
-## Outputs
+Resume uses the newest output directory with the same resolved configuration hash. Successful job hashes are skipped and missing or interrupted jobs are retried.
 
-Each run writes:
+By default, failed hashes remain recorded and only missing/interrupted work is resumed. Retry failed jobs explicitly:
 
-- `outputs/<run_id>/results.jsonl`
-- `outputs/<run_id>/summary.csv`
-- `outputs/<run_id>/overlap_report.json`
-- `outputs/<run_id>/run_manifest.json`
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --resume \
+  --retry-failed
+```
 
-Review `summary.csv` for `all`, `G0`, `G1`, and `gap:G0-G1` rows.
+Inspect a failure:
 
-## Troubleshooting
+```text
+outputs/<date>/<invocation>/jobs/<job_hash>/
+  status.json
+  stdout.log
+  stderr.log
+```
 
-- If model loading fails, run `cache-model` first and confirm `cache_dir` matches the config.
-- If CUDA is unavailable, start with `EleutherAI/pythia-160m`, lower sample counts, or use CPU only for smoke tests.
-- If PAN conversion fails, check that the CSV has text, group, and split columns and exactly two group values.
-- RAG runs are currently blocked until retrieved context is injected into model scoring.
-- Full Pile download is not required for this project; keep sample caps small until the pipeline is validated.
+Set `runtime.continue_on_error: false` when a study should stop after the first failing stage.
+
+## 8. Re-Aggregate
+
+```bash
+./.venv/bin/python -m fair_mia.cli aggregate \
+  --run-dir outputs/<date>/<invocation>
+```
+
+Aggregation reads completed job artifacts only and does not load models.
+
+## Operational Notes
+
+- Qwen and Gemma default to 4-bit QLoRA in the supplied study config.
+- OLMo uses BF16 LoRA.
+- Model execution is offline after caching.
+- Do not delete adapters until every evaluation variant and attack tier using that training hash has completed.
+- Historical Pythia runs are indexed separately and must not be pooled with the new model results.
+- RAG is outside this VM campaign.

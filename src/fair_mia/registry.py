@@ -2,7 +2,19 @@
 
 from __future__ import annotations
 
-from fair_mia.attacks import LossAttack, MembershipInferenceAttack, MinKProbAttack, NeighborhoodAttack, ReferenceAttack, ZlibEntropyAttack
+from fair_mia.attacks import (
+    LossAttack,
+    MembershipInferenceAttack,
+    MinKPlusPlusAttack,
+    MinKProbAttack,
+    NeighborhoodAttack,
+    RecallAttack,
+    ReferenceAttack,
+    SamiaAttack,
+    SpvMiaAttack,
+    WindowBasedComparisonAttack,
+    ZlibEntropyAttack,
+)
 
 
 def build_attack_registry() -> dict[str, MembershipInferenceAttack]:
@@ -12,6 +24,11 @@ def build_attack_registry() -> dict[str, MembershipInferenceAttack]:
         ZlibEntropyAttack(),
         MinKProbAttack(),
         NeighborhoodAttack(),
+        MinKPlusPlusAttack(),
+        WindowBasedComparisonAttack(),
+        RecallAttack(),
+        SamiaAttack(),
+        SpvMiaAttack(),
     ]
     return {attack.name: attack for attack in attacks}
 
@@ -22,4 +39,3 @@ def get_attacks(names: list[str]) -> list[MembershipInferenceAttack]:
     if unknown:
         raise ValueError(f"Unknown attack(s): {', '.join(unknown)}")
     return [registry[name] for name in names]
-
