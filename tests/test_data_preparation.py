@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from fair_mia.config import load_config
-from fair_mia.data import load_benchmark_samples, prepare_pan17_from_xml, prepare_pan_from_csv
+from fair_mia.data import load_benchmark_samples, prepare_pan17_from_xml, prepare_pan18_from_xml, prepare_pan_from_csv
 
 
 class FakeTokenizer:
@@ -166,6 +166,31 @@ class DataPreparationTests(unittest.TestCase):
                         seed=0,
                     )
 
+    def test_prepare_pan18_from_xml_supports_official_archive_layout(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            train_root = Path(temp_dir) / "train"
+            test_root = Path(temp_dir) / "test"
+            self._write_pan18_fixture(train_root, test_root)
+
+            with patch("fair_mia.data._load_pan17_tokenizer", return_value=FakeTokenizer()):
+                members_path, nonmembers_path = prepare_pan18_from_xml(
+                    train_dir=train_root,
+                    test_dir=test_root,
+                    output_dir=Path(temp_dir) / "out",
+                    languages=("en",),
+                    tokenizer_model_id="fake-tokenizer",
+                    window_tokens=3,
+                )
+
+            samples = load_benchmark_samples(members_path, nonmembers_path, default_scenario="finetuning")
+            self.assertEqual(len(samples), 4)
+            self.assertEqual(sum(1 for sample in samples if sample.is_member), 2)
+            self.assertEqual(sum(1 for sample in samples if not sample.is_member), 2)
+            self.assertEqual({sample.group for sample in samples}, {"G0", "G1"})
+            self.assertTrue(all(sample.attributes["dataset"] == "pan18" for sample in samples))
+            self.assertTrue(all(sample.metadata["source"] == "pan18" for sample in samples))
+            self.assertTrue(all(":w" in sample.sample_id for sample in samples))
+
     def _write_pan17_fixture(self, train_dir: Path, test_dir: Path) -> None:
         train_dir.mkdir(parents=True)
         test_dir.mkdir(parents=True)
@@ -189,6 +214,26 @@ class DataPreparationTests(unittest.TestCase):
         self._write_author_xml(train_dir / "g0m_us.xml", "u0 u1 u2 u3 u4 u5")
         self._write_author_xml(train_dir / "g1m_us.xml", "v0 v1 v2 v3 v4 v5")
         self._write_author_xml(test_dir / "g0n_us.xml", "w0 w1 w2 w3 w4 w5")
+
+    def _write_pan18_fixture(self, train_root: Path, test_root: Path) -> None:
+        train_text_dir = train_root / "en" / "text"
+        test_text_dir = test_root / "en" / "text"
+        train_text_dir.mkdir(parents=True)
+        test_text_dir.mkdir(parents=True)
+        (train_root / "en" / "en.txt").write_text(
+            "g0m:::female\n"
+            "g1m:::male\n",
+            encoding="utf-8",
+        )
+        (test_root / "en.txt").write_text(
+            "g0n:::female\n"
+            "g1n:::male\n",
+            encoding="utf-8",
+        )
+        self._write_author_xml(train_text_dir / "g0m.xml", "a b c")
+        self._write_author_xml(train_text_dir / "g1m.xml", "d e f")
+        self._write_author_xml(test_text_dir / "g0n.xml", "g h i")
+        self._write_author_xml(test_text_dir / "g1n.xml", "j k l")
 
     def _write_author_xml(self, path: Path, text: str) -> None:
         documents = "".join(f"<document><![CDATA[{token}]]></document>" for token in text.split())

@@ -244,6 +244,27 @@ def _resolve_pan17_lang_dir(base_dir: str | Path, lang: str) -> Path:
     return candidate
 
 
+def _resolve_pan18_text_dir(base_dir: str | Path, lang: str) -> tuple[Path, Path]:
+    base_path = Path(base_dir)
+    lang_dir = base_path / lang
+    candidates = [
+        (lang_dir / "text", lang_dir / f"{lang}.txt"),
+        (lang_dir / "text", base_path / f"{lang}.txt"),
+        (lang_dir, lang_dir / "truth.txt"),
+        (base_path, base_path / f"{lang}.txt"),
+        (base_path, base_path / "truth.txt"),
+    ]
+    for text_dir, truth_path in candidates:
+        if text_dir.exists() and truth_path.exists() and any(text_dir.glob("*.xml")):
+            return text_dir, truth_path
+    raise FileNotFoundError(
+        f"PAN 2018 files not found for language '{lang}' under: {base_path}. "
+        "Expected either <base>/<lang>/text plus <base>/<lang>/<lang>.txt, "
+        "<base>/<lang> plus <base>/<lang>/truth.txt, "
+        "<base>/<lang>/text plus <base>/{lang}.txt, or legacy truth.txt layouts."
+    )
+
+
 def _load_pan17_truth(path: str | Path) -> dict[str, dict[str, str]]:
     labels: dict[str, dict[str, str]] = {}
     with Path(path).open("r", encoding="utf-8") as handle:
@@ -472,9 +493,9 @@ def prepare_pan18_from_xml(
     nonmembers: list[TextSample] = []
     for lang in languages:
         for base_dir, is_member in ((train_dir, True), (test_dir, False)):
-            lang_dir = _resolve_pan17_lang_dir(base_dir, lang)
-            truth = _load_pan18_truth(lang_dir / "truth.txt")
-            for xml_path in sorted(lang_dir.glob("*.xml")):
+            text_dir, truth_path = _resolve_pan18_text_dir(base_dir, lang)
+            truth = _load_pan18_truth(truth_path)
+            for xml_path in sorted(text_dir.glob("*.xml")):
                 author_id = xml_path.stem
                 gender = truth.get(author_id)
                 if gender not in {"female", "male"}:
