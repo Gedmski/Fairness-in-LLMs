@@ -126,6 +126,12 @@ Run the fully open smoke study first:
 fair-mia run-sweep --config configs/lora_studies.yaml --study smoke_olmo_lora
 ```
 
+If you need a faster mechanics-only smoke before the full ten-attack validation, use:
+
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --study smoke_olmo_lora_fast
+```
+
 Run all enabled studies:
 
 ```bash

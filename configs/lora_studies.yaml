@@ -119,6 +119,19 @@ studies:
       audit_cap_per_cell: 8
     sweep: {}
 
+  smoke_olmo_lora_fast:
+    description: Fast mechanics smoke using a tiny training cap and only the cheapest attacks.
+    overrides:
+      model: olmo2_1b
+      training_variant: balanced
+      evaluation_variant: balanced_audit
+      seed: 29
+      epochs: 1
+      max_train_samples: 16
+      audit_cap_per_cell: 2
+      attacks: [loss, reference, zlib, min_k]
+    sweep: {}
+
   ablation_training_distribution_pan17:
     description: Controlled 3x2 raw, size-matched, and balanced PAN 2017 study.
     overrides:

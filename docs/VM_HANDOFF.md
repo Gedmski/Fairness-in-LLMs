@@ -69,13 +69,23 @@ Review the experiment count, training-job count, scoring-job count, stable adapt
 
 ## 5. Smoke Test
 
+Fast mechanics smoke:
+
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study smoke_olmo_lora_fast
+```
+
+Full smoke:
+
 ```bash
 ./.venv/bin/python -m fair_mia.cli run-sweep \
   --config configs/lora_studies.yaml \
   --study smoke_olmo_lora
 ```
 
-This is the required live VM validation. It cannot be completed on the offline development machine because it requires cached model weights and CUDA.
+Use the fast smoke when you need a short mechanics check. Use the full smoke when you need the complete all-attack validation. Neither can be completed on the offline development machine because both require cached model weights and CUDA.
 
 Check:
 
