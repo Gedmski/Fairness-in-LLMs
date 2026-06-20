@@ -58,6 +58,27 @@ class OfflinePipelineTests(unittest.TestCase):
             self.assertEqual(manifest["overlap_status"], "disabled")
             self.assertEqual(manifest["status"], "complete")
 
+    def test_run_writes_completed_progress_snapshot(self):
+        config = load_config("configs/offline_demo.json")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            patched_raw = dict(config.raw)
+            patched_raw["outputs_dir"] = temp_dir
+            config_path = Path(temp_dir) / "config.json"
+            config_path.write_text(json.dumps(patched_raw), encoding="utf-8")
+            progress_path = Path(temp_dir) / "job-progress.json"
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                run_benchmark(
+                    load_config(config_path),
+                    progress_path=progress_path,
+                    progress_label="offline-test",
+                )
+
+            progress = json.loads(progress_path.read_text(encoding="utf-8"))
+            self.assertEqual(progress["phase"], "complete")
+            self.assertEqual(progress["completed"], progress["total"])
+            self.assertEqual(progress["percent"], 100.0)
+
 
 if __name__ == "__main__":
     unittest.main()

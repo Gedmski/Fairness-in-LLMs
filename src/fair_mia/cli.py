@@ -25,6 +25,7 @@ from fair_mia.defenses import NoOpDefense
 from fair_mia.models import FakeLanguageModelAdapter, HuggingFaceCausalLMAdapter
 from fair_mia.models.huggingface import cache_hf_model
 from fair_mia.overlap import build_overlap_report
+from fair_mia.progress import ProgressReporter
 from fair_mia.registry import build_attack_registry, get_attacks
 from fair_mia.reporting import prepare_run_dir, write_json, write_results_jsonl, write_summary_csv
 from fair_mia.scenarios import FineTuningScenarioRunner, PretrainingScenarioRunner, RagScenarioRunner
@@ -176,7 +177,12 @@ def load_calibration_samples_from_config(config: BenchmarkConfig) -> list[TextSa
     )
 
 
-def run_benchmark(config: BenchmarkConfig) -> Path:
+def run_benchmark(
+    config: BenchmarkConfig,
+    *,
+    progress_path: str | Path | None = None,
+    progress_label: str | None = None,
+) -> Path:
     samples = load_samples_from_config(config)
     calibration_samples = load_calibration_samples_from_config(config)
     if "rag" in config.scenarios:
@@ -190,6 +196,17 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
     )
 
     attacks = get_attacks(config.attacks)
+    progress_enabled = progress_path is not None or sys.stdout.isatty()
+    progress = ProgressReporter(
+        label=progress_label or config.run_id,
+        total=(len(samples) + len(calibration_samples)) * len(attacks) * len(config.scenarios),
+        path=progress_path or (run_dir / "progress.json"),
+        enabled=progress_enabled,
+    )
+    progress.phase(
+        "model_loading",
+        f"target={config.model.model_id} reference={config.model.reference_model_id or config.model.model_id}",
+    )
     if config.model.backend == "hf":
         target_model = HuggingFaceCausalLMAdapter(
             model_id=config.model.model_id,
@@ -240,11 +257,38 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
 
     records: list[AttackRecord] = []
     calibration_records: list[AttackRecord] = []
+
+    def progress_callback(split_name: str):
+        def report(sample_index: int, sample_total: int, attack_name: str, sample_id: str) -> None:
+            progress.update(
+                detail=(
+                    f"{split_name} sample {sample_index}/{sample_total} "
+                    f"attack={attack_name} id={sample_id}"
+                )
+            )
+
+        return report
+
     for scenario_name in config.scenarios:
+        progress.phase(
+            "evaluation_scoring",
+            f"scenario={scenario_name} samples={len(samples)} attacks={len(attacks)}",
+        )
         records.extend(
-            scenario_registry[scenario_name].run(samples, attacks, target_model, reference_model, defense)
+            scenario_registry[scenario_name].run(
+                samples,
+                attacks,
+                target_model,
+                reference_model,
+                defense,
+                progress_callback=progress_callback("evaluation"),
+            )
         )
         if calibration_samples:
+            progress.phase(
+                "calibration_scoring",
+                f"scenario={scenario_name} samples={len(calibration_samples)} attacks={len(attacks)}",
+            )
             calibration_records.extend(
                 scenario_registry[scenario_name].run(
                     calibration_samples,
@@ -252,9 +296,11 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
                     target_model,
                     reference_model,
                     defense,
+                    progress_callback=progress_callback("calibration"),
                 )
             )
 
+    progress.phase("reporting", "writing records and bootstrap metrics")
     write_results_jsonl(records, run_dir / "results.jsonl")
     if calibration_records:
         write_results_jsonl(calibration_records, run_dir / "calibration_results.jsonl")
@@ -273,6 +319,7 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
     )
 
     overlap_status = "disabled" if not config.overlap.enabled else "complete"
+    progress.phase("overlap", "computing member/nonmember n-gram overlap diagnostics")
     try:
         overlap_report = build_overlap_report(
             samples,
@@ -306,6 +353,7 @@ def run_benchmark(config: BenchmarkConfig) -> Path:
         ),
         run_dir / "run_manifest.json",
     )
+    progress.finish("benchmark artifacts complete")
     return run_dir
 
 

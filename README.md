@@ -208,6 +208,12 @@ outputs/YYYY-MM-DD/<invocation_id>/
 
 Every job writes `status.json`, `stdout.log`, and `stderr.log` immediately. Failed runs include the resolved job, stage, GPU, timestamps, reason, and traceback.
 
+Active scoring jobs also write `progress.json` and stream progress bars to the sweep terminal. The progress snapshot includes the current phase, completed and total sample-attack units, percentage, elapsed time, ETA, processing rate, and current sample/attack detail. Watch all active progress snapshots with:
+
+```bash
+watch -n 10 'find outputs -name progress.json -print -exec cat {} \;'
+```
+
 `summary.csv` contains aggregate rows. `metrics.csv` contains aggregate, gender, language, variety, and intersectional rows. Statistical cells with fewer than 30 members or 30 nonmembers are marked suppressed. `comparisons.csv` records matched raw-versus-balanced AUC differences.
 
 ## Interpretation

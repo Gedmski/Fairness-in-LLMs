@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -21,6 +22,9 @@ from fair_mia.study_config import (
     resolve_experiments,
     stable_hash,
 )
+
+
+_CONSOLE_LOCK = threading.Lock()
 
 
 def _root_for(config: StudyConfig) -> Path:
@@ -446,7 +450,13 @@ def execute_job(job: dict[str, Any], invocation_dir: str | Path, gpu_id: int | N
             }
             config_path = job_dir / "score_config.json"
             config_path.write_text(json.dumps(score_config, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-            run_benchmark(load_config(config_path))
+            run_benchmark(
+                load_config(config_path),
+                progress_path=job_dir / "progress.json",
+                progress_label=(
+                    f"{job['study_name']}:{job['evaluation_tier']}:{job['job_hash'][:8]}"
+                ),
+            )
         elif job["stage"] == "attack_evaluation":
             primitive_dir = invocation_dir / "jobs" / job["primitive_job_hash"] / "score"
             if not primitive_dir.exists():
@@ -536,12 +546,61 @@ def _run_subprocess_job(
     if gpu_id is not None:
         command.extend(["--gpu-id", str(gpu_id)])
     environment = dict(os.environ)
+    environment["PYTHONUNBUFFERED"] = "1"
     if gpu_id is not None:
         environment["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-    result = subprocess.run(command, capture_output=True, text=True, env=environment)
-    (job_dir / "stdout.log").write_text(result.stdout, encoding="utf-8")
-    (job_dir / "stderr.log").write_text(result.stderr, encoding="utf-8")
-    return job["job_hash"], result.returncode == 0, result.stderr.strip()
+    prefix = f"[{job['stage']} {job['job_hash'][:8]} gpu={gpu_id if gpu_id is not None else '-'}] "
+    with _CONSOLE_LOCK:
+        print(f"{prefix}started", flush=True)
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
+        env=environment,
+    )
+
+    def tee(source, log_handle, display) -> None:
+        assert source is not None
+        for line in iter(source.readline, ""):
+            log_handle.write(line)
+            log_handle.flush()
+            with _CONSOLE_LOCK:
+                display.write(prefix + line)
+                display.flush()
+        source.close()
+
+    with (
+        (job_dir / "stdout.log").open("w", encoding="utf-8", buffering=1) as stdout_log,
+        (job_dir / "stderr.log").open("w", encoding="utf-8", buffering=1) as stderr_log,
+    ):
+        stdout_thread = threading.Thread(
+            target=tee,
+            args=(process.stdout, stdout_log, sys.stdout),
+            daemon=True,
+        )
+        stderr_thread = threading.Thread(
+            target=tee,
+            args=(process.stderr, stderr_log, sys.stderr),
+            daemon=True,
+        )
+        stdout_thread.start()
+        stderr_thread.start()
+        return_code = process.wait()
+        stdout_thread.join()
+        stderr_thread.join()
+
+    error = ""
+    if return_code != 0:
+        error_lines = (job_dir / "stderr.log").read_text(encoding="utf-8").splitlines()
+        error = "\n".join(error_lines[-20:])
+    with _CONSOLE_LOCK:
+        outcome = "success" if return_code == 0 else f"failed ({return_code})"
+        print(f"{prefix}{outcome}", flush=True)
+    return job["job_hash"], return_code == 0, error
 
 
 def _run_stage(

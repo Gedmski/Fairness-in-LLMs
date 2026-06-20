@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 
 from fair_mia.attacks.base import MembershipInferenceAttack
 from fair_mia.defenses.base import Defense
 from fair_mia.models.base import LanguageModelAdapter
 from fair_mia.types import AttackRecord, TextSample
+
+
+ProgressCallback = Callable[[int, int, str, str], None]
 
 
 class ScenarioRunner(ABC):
@@ -21,6 +25,7 @@ class ScenarioRunner(ABC):
         target_model: LanguageModelAdapter,
         reference_model: LanguageModelAdapter,
         defense: Defense,
+        progress_callback: ProgressCallback | None = None,
     ) -> list[AttackRecord]:
         """Run scenario-specific attack evaluation."""
 
@@ -33,9 +38,11 @@ def score_samples_for_scenario(
     reference_model: LanguageModelAdapter,
     defense: Defense,
     extra_diagnostics: dict[str, object] | None = None,
+    progress_callback: ProgressCallback | None = None,
 ) -> list[AttackRecord]:
     records: list[AttackRecord] = []
-    for original_sample in samples:
+    sample_total = len(samples)
+    for sample_index, original_sample in enumerate(samples, start=1):
         sample = defense.apply(original_sample.with_scenario(scenario_name))
         for attack in attacks:
             score = attack.score(sample, target_model, reference_model)
@@ -54,4 +61,6 @@ def score_samples_for_scenario(
                     attributes=dict(sample.attributes),
                 )
             )
+            if progress_callback is not None:
+                progress_callback(sample_index, sample_total, attack.name, sample.sample_id)
     return records

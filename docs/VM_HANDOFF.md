@@ -140,6 +140,12 @@ outputs/<date>/<invocation>/jobs/<job_hash>/
   stderr.log
 ```
 
+Scoring output is streamed live to the sweep terminal and to each job log. Active scoring jobs also update `progress.json`; monitor them from another shell with:
+
+```bash
+watch -n 10 'find outputs -name progress.json -print -exec cat {} \;'
+```
+
 Set `runtime.continue_on_error: false` when a study should stop after the first failing stage.
 
 ## 8. Re-Aggregate

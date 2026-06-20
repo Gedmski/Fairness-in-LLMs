@@ -5,7 +5,7 @@ from __future__ import annotations
 from fair_mia.attacks.base import MembershipInferenceAttack
 from fair_mia.defenses.base import Defense
 from fair_mia.models.base import LanguageModelAdapter
-from fair_mia.scenarios.base import ScenarioRunner
+from fair_mia.scenarios.base import ProgressCallback, ScenarioRunner
 from fair_mia.types import AttackRecord, TextSample
 
 
@@ -26,5 +26,6 @@ class RagScenarioRunner(ScenarioRunner):
         target_model: LanguageModelAdapter,
         reference_model: LanguageModelAdapter,
         defense: Defense,
+        progress_callback: ProgressCallback | None = None,
     ) -> list[AttackRecord]:
         raise NotImplementedError(self.UNSUPPORTED_MESSAGE)
