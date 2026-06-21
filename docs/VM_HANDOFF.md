@@ -112,6 +112,22 @@ Run the smaller overnight pilot instead:
   --study pilot_training_distribution_pan17
 ```
 
+Other overnight pilots:
+
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study pilot_robustness_pan18
+
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study pilot_model_family_pan17
+
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study pilot_training_exposure_pan17
+```
+
 Run all enabled studies:
 
 ```bash

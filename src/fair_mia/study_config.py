@@ -18,8 +18,11 @@ SUPPORTED_STUDY_FIELDS = {
     "seed",
     "epochs",
     "attacks",
+    "full_attacks",
+    "audit_attacks",
     "max_train_samples",
     "audit_cap_per_cell",
+    "bootstrap_replicates",
 }
 
 
@@ -123,8 +126,11 @@ class ResolvedExperiment:
     seed: int
     epochs: int
     attacks: tuple[str, ...] = ()
+    full_attacks: tuple[str, ...] = ()
+    audit_attacks: tuple[str, ...] = ()
     max_train_samples: int = 0
     audit_cap_per_cell: int = 100
+    bootstrap_replicates: int = 1000
     historical: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -337,6 +343,15 @@ def resolve_experiments(config: StudyConfig, *, study_name: str | None = None) -
             if not config.datasets[dataset].enabled:
                 continue
             attacks = tuple(str(value) for value in resolved.get("attacks", ()))
+            full_attacks = tuple(str(value) for value in resolved.get("full_attacks", ()))
+            audit_attacks = tuple(str(value) for value in resolved.get("audit_attacks", ()))
+            if attacks:
+                if full_attacks or audit_attacks:
+                    raise ValueError(
+                        f"Study {study.name!r} cannot set both 'attacks' and per-tier attack overrides."
+                    )
+                full_attacks = attacks
+                audit_attacks = attacks
             experiments.append(
                 ResolvedExperiment(
                     study_name=study.name,
@@ -347,11 +362,19 @@ def resolve_experiments(config: StudyConfig, *, study_name: str | None = None) -
                     seed=int(resolved.get("seed", 29)),
                     epochs=int(resolved.get("epochs", config.finetuning.epochs)),
                     attacks=attacks,
+                    full_attacks=full_attacks,
+                    audit_attacks=audit_attacks,
                     max_train_samples=int(
                         resolved.get("max_train_samples", config.finetuning.max_train_samples)
                     ),
                     audit_cap_per_cell=int(
                         resolved.get("audit_cap_per_cell", config.evaluation.audit_cap_per_cell)
+                    ),
+                    bootstrap_replicates=int(
+                        resolved.get(
+                            "bootstrap_replicates",
+                            config.evaluation.bootstrap_replicates,
+                        )
                     ),
                     historical=study.historical,
                 )

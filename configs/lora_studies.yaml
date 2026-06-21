@@ -142,8 +142,59 @@ studies:
       epochs: 1
       max_train_samples: 512
       audit_cap_per_cell: 25
+      full_attacks: [loss, reference]
+      audit_attacks: [loss, reference, zlib, min_k]
+      bootstrap_replicates: 100
     sweep:
       training_variant: [raw_full, balanced]
+
+  pilot_robustness_pan18:
+    description: Overnight PAN 2018 Qwen pilot mirroring the PAN 2017 distribution pilot.
+    overrides:
+      dataset: pan18_multilingual
+      model: qwen3_4b
+      evaluation_variant: balanced_audit
+      seed: 29
+      epochs: 1
+      max_train_samples: 512
+      audit_cap_per_cell: 25
+      full_attacks: [loss, reference]
+      audit_attacks: [loss, reference, zlib, min_k]
+      bootstrap_replicates: 100
+    sweep:
+      training_variant: [raw_full, balanced]
+
+  pilot_model_family_pan17:
+    description: Overnight model-family pilot with one seed, balanced training, capped train size, and one audit evaluation.
+    overrides:
+      dataset: pan17_multilingual
+      training_variant: balanced
+      evaluation_variant: balanced_audit
+      seed: 29
+      epochs: 1
+      max_train_samples: 512
+      audit_cap_per_cell: 25
+      full_attacks: [loss, reference]
+      audit_attacks: [loss, reference, zlib, min_k]
+      bootstrap_replicates: 100
+    sweep:
+      model: [qwen3_4b, olmo2_1b]
+
+  pilot_training_exposure_pan17:
+    description: Overnight exposure pilot with balanced PAN 2017 training, one seed, capped train size, and audit evaluation.
+    overrides:
+      dataset: pan17_multilingual
+      model: qwen3_4b
+      training_variant: balanced
+      evaluation_variant: balanced_audit
+      seed: 29
+      max_train_samples: 512
+      audit_cap_per_cell: 25
+      full_attacks: [loss, reference]
+      audit_attacks: [loss, reference, zlib, min_k]
+      bootstrap_replicates: 100
+    sweep:
+      epochs: [1, 2]
 
   ablation_training_distribution_pan17:
     description: Controlled 3x2 raw, size-matched, and balanced PAN 2017 study.

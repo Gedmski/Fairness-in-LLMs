@@ -34,6 +34,27 @@ class StudyConfigTests(unittest.TestCase):
     def test_stable_hash_ignores_mapping_order(self):
         self.assertEqual(stable_hash({"a": 1, "b": 2}), stable_hash({"b": 2, "a": 1}))
 
+    def test_pilot_study_can_override_attacks_per_tier_and_bootstrap_replicates(self):
+        config = load_study_config("configs/lora_studies.yaml")
+        experiments = resolve_experiments(config, study_name="pilot_training_distribution_pan17")
+        self.assertEqual(len(experiments), 2)
+        for experiment in experiments:
+            self.assertEqual(experiment.full_attacks, ("loss", "reference"))
+            self.assertEqual(experiment.audit_attacks, ("loss", "reference", "zlib", "min_k"))
+            self.assertEqual(experiment.bootstrap_replicates, 100)
+        plan = build_execution_plan(config, experiments)
+        scoring_jobs = [job for job in plan["jobs"] if job["stage"] == "primitive_scoring"]
+        self.assertEqual(len(scoring_jobs), 4)
+        full_jobs = [job for job in scoring_jobs if job["evaluation_tier"] == "full"]
+        audit_jobs = [job for job in scoring_jobs if job["evaluation_tier"] == "audit"]
+        self.assertTrue(full_jobs)
+        self.assertTrue(audit_jobs)
+        self.assertTrue(all(job["attacks"] == ["loss", "reference"] for job in full_jobs))
+        self.assertTrue(
+            all(job["attacks"] == ["loss", "reference", "zlib", "min_k"] for job in audit_jobs)
+        )
+        self.assertTrue(all(job["bootstrap_replicates"] == 100 for job in scoring_jobs))
+
     def test_matching_training_jobs_are_reused_and_gpu_plans_are_bounded(self):
         config = load_study_config("configs/lora_studies.yaml")
         plan = build_execution_plan(config, resolve_experiments(config))

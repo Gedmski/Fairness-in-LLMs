@@ -138,6 +138,14 @@ If the full PAN 2017 distribution ablation is too expensive for an exploratory r
 fair-mia run-sweep --config configs/lora_studies.yaml --study pilot_training_distribution_pan17
 ```
 
+Other overnight pilot studies:
+
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --study pilot_robustness_pan18
+fair-mia run-sweep --config configs/lora_studies.yaml --study pilot_model_family_pan17
+fair-mia run-sweep --config configs/lora_studies.yaml --study pilot_training_exposure_pan17
+```
+
 Run all enabled studies:
 
 ```bash

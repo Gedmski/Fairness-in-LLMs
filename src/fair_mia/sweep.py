@@ -166,13 +166,15 @@ def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperime
                 "audit_nonmembers.jsonl",
             ),
         ):
-            resolved_attacks = tuple(experiment.attacks or default_attacks)
+            tier_attacks = experiment.full_attacks if tier == "full" else experiment.audit_attacks
+            resolved_attacks = tuple(tier_attacks or experiment.attacks or default_attacks)
             key = (
                 training["job_hash"],
                 experiment.evaluation_variant,
                 tier,
                 experiment.audit_cap_per_cell,
                 resolved_attacks,
+                experiment.bootstrap_replicates,
             )
             evaluation_dir = (
                 variants_dir
@@ -209,7 +211,7 @@ def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperime
                     "trust_remote_code": model.trust_remote_code,
                     "max_length": config.finetuning.max_length,
                     "min_cell_members": config.evaluation.min_cell_members,
-                    "bootstrap_replicates": config.evaluation.bootstrap_replicates,
+                    "bootstrap_replicates": experiment.bootstrap_replicates,
                     },
                     [training["job_hash"]],
                 )
