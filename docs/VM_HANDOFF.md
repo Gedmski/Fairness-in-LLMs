@@ -104,6 +104,14 @@ Run one study:
   --study ablation_training_distribution_pan17
 ```
 
+Run the smaller overnight pilot instead:
+
+```bash
+./.venv/bin/python -m fair_mia.cli run-sweep \
+  --config configs/lora_studies.yaml \
+  --study pilot_training_distribution_pan17
+```
+
 Run all enabled studies:
 
 ```bash

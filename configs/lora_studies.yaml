@@ -132,6 +132,19 @@ studies:
       attacks: [loss, reference, zlib, min_k]
     sweep: {}
 
+  pilot_training_distribution_pan17:
+    description: Overnight PAN 2017 Qwen pilot with one seed, two train variants, one audit evaluation, and capped training size.
+    overrides:
+      dataset: pan17_multilingual
+      model: qwen3_4b
+      evaluation_variant: balanced_audit
+      seed: 29
+      epochs: 1
+      max_train_samples: 512
+      audit_cap_per_cell: 25
+    sweep:
+      training_variant: [raw_full, balanced]
+
   ablation_training_distribution_pan17:
     description: Controlled 3x2 raw, size-matched, and balanced PAN 2017 study.
     overrides:

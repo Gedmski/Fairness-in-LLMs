@@ -132,6 +132,12 @@ If you need a faster mechanics-only smoke before the full ten-attack validation,
 fair-mia run-sweep --config configs/lora_studies.yaml --study smoke_olmo_lora_fast
 ```
 
+If the full PAN 2017 distribution ablation is too expensive for an exploratory run, use the overnight pilot:
+
+```bash
+fair-mia run-sweep --config configs/lora_studies.yaml --study pilot_training_distribution_pan17
+```
+
 Run all enabled studies:
 
 ```bash
