@@ -218,7 +218,7 @@ class HuggingFaceCausalLMAdapter(LanguageModelAdapter):
             return
         try:
             import torch
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
         except ImportError as exc:
             raise MissingResearchDependencyError(
                 "Install research dependencies before using Hugging Face models: pip install -e .[research]"
@@ -234,7 +234,12 @@ class HuggingFaceCausalLMAdapter(LanguageModelAdapter):
         self._tokenizer = AutoTokenizer.from_pretrained(self.model_id, **common_kwargs)
         model_kwargs = dict(common_kwargs)
         if self.load_in_4bit:
-            model_kwargs["load_in_4bit"] = True
+            model_kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+            )
         self._model = AutoModelForCausalLM.from_pretrained(
             self.model_id,
             torch_dtype=torch_dtype,

@@ -39,7 +39,7 @@ def finetune_lora(
         import peft
         import transformers
         from peft import LoraConfig, get_peft_model
-        from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments
     except ImportError as exc:
         raise RuntimeError("Install research dependencies before LoRA fine-tuning: pip install -e .[research]") from exc
 
@@ -59,7 +59,12 @@ def finetune_lora(
         "device_map": "auto",
     }
     if load_in_4bit:
-        model_kwargs["load_in_4bit"] = True
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
     model = AutoModelForCausalLM.from_pretrained(
         base_model_id,
         **model_kwargs,

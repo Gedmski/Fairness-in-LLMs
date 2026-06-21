@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from fair_mia.models.huggingface import HuggingFaceCausalLMAdapter, MissingResearchDependencyError
@@ -12,6 +13,9 @@ class MockTokenizer:
 class MockModel:
     def score_token_losses(self, text, sample):
         return text.split(), [0.1, 0.2, 0.3]
+
+    def eval(self):
+        return self
 
 
 class HuggingFaceAdapterTests(unittest.TestCase):
@@ -38,6 +42,47 @@ class HuggingFaceAdapterTests(unittest.TestCase):
         with patch("builtins.__import__", side_effect=fake_import):
             with self.assertRaises(MissingResearchDependencyError):
                 adapter.score_tokens("alpha beta")
+
+    def test_4bit_loading_uses_quantization_config(self):
+        captured = {}
+
+        class MockAutoTokenizer:
+            @staticmethod
+            def from_pretrained(*args, **kwargs):
+                return MockTokenizer()
+
+        class MockAutoModelForCausalLM:
+            @staticmethod
+            def from_pretrained(*args, **kwargs):
+                captured.update(kwargs)
+                return MockModel()
+
+        class MockBitsAndBytesConfig:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+        fake_transformers = SimpleNamespace(
+            AutoModelForCausalLM=MockAutoModelForCausalLM,
+            AutoTokenizer=MockAutoTokenizer,
+            BitsAndBytesConfig=MockBitsAndBytesConfig,
+        )
+        fake_torch = SimpleNamespace(bfloat16="bf16", float32="fp32", cuda=SimpleNamespace(is_available=lambda: True))
+        real_import = __import__
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "torch":
+                return fake_torch
+            if name == "transformers":
+                return fake_transformers
+            return real_import(name, globals, locals, fromlist, level)
+
+        adapter = HuggingFaceCausalLMAdapter(model_id="mock", load_in_4bit=True)
+        with patch("builtins.__import__", side_effect=fake_import):
+            adapter._ensure_loaded()
+
+        self.assertNotIn("load_in_4bit", captured)
+        self.assertIn("quantization_config", captured)
+        self.assertTrue(captured["quantization_config"].kwargs["load_in_4bit"])
 
 
 if __name__ == "__main__":
