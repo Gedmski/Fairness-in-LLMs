@@ -142,9 +142,11 @@ studies:
       epochs: 1
       max_train_samples: 512
       audit_cap_per_cell: 25
+      skip_full_tier: true
       full_attacks: [loss, reference]
       audit_attacks: [loss, reference, zlib, min_k]
       bootstrap_replicates: 100
+      max_calibration_samples: 400
     sweep:
       training_variant: [raw_full, balanced]
 
@@ -158,9 +160,11 @@ studies:
       epochs: 1
       max_train_samples: 512
       audit_cap_per_cell: 25
+      skip_full_tier: true
       full_attacks: [loss, reference]
       audit_attacks: [loss, reference, zlib, min_k]
       bootstrap_replicates: 100
+      max_calibration_samples: 400
     sweep:
       training_variant: [raw_full, balanced]
 
@@ -174,9 +178,11 @@ studies:
       epochs: 1
       max_train_samples: 512
       audit_cap_per_cell: 25
+      skip_full_tier: true
       full_attacks: [loss, reference]
       audit_attacks: [loss, reference, zlib, min_k]
       bootstrap_replicates: 100
+      max_calibration_samples: 400
     sweep:
       model: [qwen3_4b, olmo2_1b]
 
@@ -190,9 +196,11 @@ studies:
       seed: 29
       max_train_samples: 512
       audit_cap_per_cell: 25
+      skip_full_tier: true
       full_attacks: [loss, reference]
       audit_attacks: [loss, reference, zlib, min_k]
       bootstrap_replicates: 100
+      max_calibration_samples: 400
     sweep:
       epochs: [1, 2]
 

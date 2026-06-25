@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -22,6 +23,7 @@ from fair_mia.study_config import (
     resolve_experiments,
     stable_hash,
 )
+from fair_mia.data import load_jsonl_samples, write_jsonl_samples
 
 
 _CONSOLE_LOCK = threading.Lock()
@@ -44,6 +46,51 @@ def _job(stage: str, payload: dict[str, Any], dependencies: list[str] | None = N
         "dependencies": dependencies or [],
         **payload,
     }
+
+
+def _sample_key(sample: Any) -> tuple[str, str]:
+    language = sample.attributes.get("language") or str(sample.metadata.get("language", "unknown"))
+    return sample.group, language
+
+
+def _materialize_capped_jsonl(
+    source_path: str | Path,
+    output_path: Path,
+    *,
+    is_member: bool,
+    default_scenario: str,
+    max_samples: int,
+    seed: int,
+) -> str:
+    source = Path(source_path)
+    if max_samples <= 0:
+        return str(source)
+    samples = load_jsonl_samples(source, is_member=is_member, default_scenario=default_scenario)
+    if len(samples) <= max_samples:
+        return str(source)
+    rng = random.Random(seed)
+    buckets: dict[tuple[str, str], list[Any]] = {}
+    for sample in samples:
+        buckets.setdefault(_sample_key(sample), []).append(sample)
+    for bucket in buckets.values():
+        rng.shuffle(bucket)
+    selected: list[Any] = []
+    active = [key for key, bucket in buckets.items() if bucket]
+    while active and len(selected) < max_samples:
+        next_active: list[tuple[str, str]] = []
+        rng.shuffle(active)
+        for key in active:
+            bucket = buckets[key]
+            if not bucket:
+                continue
+            selected.append(bucket.pop())
+            if bucket:
+                next_active.append(key)
+            if len(selected) >= max_samples:
+                break
+        active = next_active
+    write_jsonl_samples(selected, output_path)
+    return str(output_path)
 
 
 def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperiment]) -> dict[str, Any]:
@@ -166,6 +213,8 @@ def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperime
                 "audit_nonmembers.jsonl",
             ),
         ):
+            if tier == "full" and experiment.skip_full_tier:
+                continue
             tier_attacks = experiment.full_attacks if tier == "full" else experiment.audit_attacks
             resolved_attacks = tuple(tier_attacks or experiment.attacks or default_attacks)
             key = (
@@ -175,6 +224,8 @@ def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperime
                 experiment.audit_cap_per_cell,
                 resolved_attacks,
                 experiment.bootstrap_replicates,
+                experiment.max_full_eval_samples if tier == "full" else experiment.max_audit_eval_samples,
+                experiment.max_calibration_samples,
             )
             evaluation_dir = (
                 variants_dir
@@ -206,6 +257,12 @@ def build_execution_plan(config: StudyConfig, experiments: list[ResolvedExperime
                     "nonmembers_path": str(evaluation_dir / nonmembers_name),
                     "calibration_members_path": str(evaluation_dir / "calibration_members.jsonl"),
                     "calibration_nonmembers_path": str(evaluation_dir / "calibration_nonmembers.jsonl"),
+                    "max_eval_samples": (
+                        experiment.max_full_eval_samples
+                        if tier == "full"
+                        else experiment.max_audit_eval_samples
+                    ),
+                    "max_calibration_samples": experiment.max_calibration_samples,
                     "local_files_only": config.runtime.local_files_only,
                     "load_in_4bit": model.load_in_4bit,
                     "trust_remote_code": model.trust_remote_code,
@@ -415,15 +472,51 @@ def execute_job(job: dict[str, Any], invocation_dir: str | Path, gpu_id: int | N
             from fair_mia.cli import run_benchmark
             from fair_mia.config import load_config
 
+            sampled_dir = job_dir / "sampled_inputs"
+            sampled_dir.mkdir(parents=True, exist_ok=True)
+            eval_seed = int(job["seed"]) + (0 if job["evaluation_tier"] == "full" else 10_000)
+            calibration_seed = int(job["seed"]) + 20_000
+            members_path = _materialize_capped_jsonl(
+                job["members_path"],
+                sampled_dir / "members.jsonl",
+                is_member=True,
+                default_scenario="finetuning",
+                max_samples=int(job.get("max_eval_samples", 0)),
+                seed=eval_seed,
+            )
+            nonmembers_path = _materialize_capped_jsonl(
+                job["nonmembers_path"],
+                sampled_dir / "nonmembers.jsonl",
+                is_member=False,
+                default_scenario="finetuning",
+                max_samples=int(job.get("max_eval_samples", 0)),
+                seed=eval_seed + 1,
+            )
+            calibration_members_path = _materialize_capped_jsonl(
+                job["calibration_members_path"],
+                sampled_dir / "calibration_members.jsonl",
+                is_member=True,
+                default_scenario="finetuning",
+                max_samples=int(job.get("max_calibration_samples", 0)),
+                seed=calibration_seed,
+            )
+            calibration_nonmembers_path = _materialize_capped_jsonl(
+                job["calibration_nonmembers_path"],
+                sampled_dir / "calibration_nonmembers.jsonl",
+                is_member=False,
+                default_scenario="finetuning",
+                max_samples=int(job.get("max_calibration_samples", 0)),
+                seed=calibration_seed + 1,
+            )
             score_config = {
                 "run_id": "score",
                 "seed": job["seed"],
                 "outputs_dir": str(job_dir),
                 "dataset": {
-                    "members_path": job["members_path"],
-                    "nonmembers_path": job["nonmembers_path"],
-                    "calibration_members_path": job["calibration_members_path"],
-                    "calibration_nonmembers_path": job["calibration_nonmembers_path"],
+                    "members_path": members_path,
+                    "nonmembers_path": nonmembers_path,
+                    "calibration_members_path": calibration_members_path,
+                    "calibration_nonmembers_path": calibration_nonmembers_path,
                     "default_scenario": "finetuning",
                     "evaluation_variant": job["evaluation_variant"],
                     "evaluation_tier": job["evaluation_tier"],

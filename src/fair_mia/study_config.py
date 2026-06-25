@@ -23,6 +23,10 @@ SUPPORTED_STUDY_FIELDS = {
     "max_train_samples",
     "audit_cap_per_cell",
     "bootstrap_replicates",
+    "skip_full_tier",
+    "max_full_eval_samples",
+    "max_audit_eval_samples",
+    "max_calibration_samples",
 }
 
 
@@ -131,6 +135,10 @@ class ResolvedExperiment:
     max_train_samples: int = 0
     audit_cap_per_cell: int = 100
     bootstrap_replicates: int = 1000
+    skip_full_tier: bool = False
+    max_full_eval_samples: int = 0
+    max_audit_eval_samples: int = 0
+    max_calibration_samples: int = 0
     historical: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -376,6 +384,10 @@ def resolve_experiments(config: StudyConfig, *, study_name: str | None = None) -
                             config.evaluation.bootstrap_replicates,
                         )
                     ),
+                    skip_full_tier=bool(resolved.get("skip_full_tier", False)),
+                    max_full_eval_samples=int(resolved.get("max_full_eval_samples", 0)),
+                    max_audit_eval_samples=int(resolved.get("max_audit_eval_samples", 0)),
+                    max_calibration_samples=int(resolved.get("max_calibration_samples", 0)),
                     historical=study.historical,
                 )
             )
