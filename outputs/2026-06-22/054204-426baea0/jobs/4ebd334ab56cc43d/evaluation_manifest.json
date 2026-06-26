@@ -1,0 +1,9 @@
+{
+  "attacks": [
+    "loss",
+    "reference"
+  ],
+  "evaluation_tier": "full",
+  "evaluation_variant": "balanced_audit",
+  "primitive_job_hash": "64203c2c79a7b44f"
+}

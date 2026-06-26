@@ -1,0 +1,51 @@
+{
+  "gpu": 1,
+  "job": {
+    "adapter_dir": "artifacts/adapters/191482bca52420b4",
+    "attacks": [
+      "loss",
+      "reference",
+      "zlib",
+      "min_k",
+      "neighborhood",
+      "min_k_plus_plus",
+      "wbc",
+      "recall",
+      "samia",
+      "spv_mia"
+    ],
+    "bootstrap_replicates": 1000,
+    "cache_dir": "artifacts/models",
+    "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+    "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+    "dataset": "pan17_multilingual",
+    "dependencies": [
+      "cb4f50089c2e5260"
+    ],
+    "epochs": 1,
+    "evaluation_tier": "audit",
+    "evaluation_variant": "balanced_audit",
+    "job_hash": "e73089f46de1a5f6",
+    "load_in_4bit": false,
+    "local_files_only": true,
+    "max_length": 256,
+    "members_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/audit_members.jsonl",
+    "min_cell_members": 30,
+    "model": "olmo2_1b",
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl",
+    "planned_gpu": 1,
+    "reference_model_id": "allenai/OLMo-2-0425-1B",
+    "seed": 29,
+    "stage": "primitive_scoring",
+    "study_name": "smoke_olmo_lora",
+    "training_job_hash": "cb4f50089c2e5260",
+    "training_variant": "balanced",
+    "trust_remote_code": false
+  },
+  "job_hash": "e73089f46de1a5f6",
+  "stage": "primitive_scoring",
+  "started_at": "2026-06-20T13:47:07.221220+00:00",
+  "status": "running",
+  "study_name": "smoke_olmo_lora"
+}

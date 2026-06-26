@@ -1,0 +1,7 @@
+{'loss': '3.588', 'grad_norm': '0.3959', 'learning_rate': '0.0001719', 'epoch': '0.3125'}
+{'loss': '3.572', 'grad_norm': '0.3901', 'learning_rate': '0.0001406', 'epoch': '0.625'}
+{'loss': '3.528', 'grad_norm': '0.3697', 'learning_rate': '0.0001094', 'epoch': '0.9375'}
+{'loss': '3.371', 'grad_norm': '0.4031', 'learning_rate': '7.813e-05', 'epoch': '1.25'}
+{'loss': '3.429', 'grad_norm': '0.4673', 'learning_rate': '4.688e-05', 'epoch': '1.562'}
+{'loss': '3.435', 'grad_norm': '0.5802', 'learning_rate': '1.563e-05', 'epoch': '1.875'}
+{'train_runtime': '913.8', 'train_samples_per_second': '1.121', 'train_steps_per_second': '0.07', 'train_loss': '3.475', 'epoch': '2'}

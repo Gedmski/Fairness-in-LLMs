@@ -1,0 +1,136 @@
+{
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k"
+  ],
+  "config": {
+    "attacks": [
+      "loss",
+      "reference",
+      "zlib",
+      "min_k"
+    ],
+    "dataset": {
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "default_scenario": "finetuning",
+      "evaluation_tier": "audit",
+      "evaluation_variant": "balanced_audit",
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/audit_members.jsonl",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl"
+    },
+    "evaluation": {
+      "bootstrap_replicates": 1000,
+      "min_cell_members": 30
+    },
+    "model": {
+      "adapter_path": "artifacts/adapters/869b6249f8356a4e",
+      "backend": "hf",
+      "cache_dir": "artifacts/models",
+      "device_map": "auto",
+      "dtype": "bfloat16",
+      "load_in_4bit": false,
+      "local_files_only": true,
+      "max_length": 256,
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "perturbation_model_id": "FacebookAI/xlm-roberta-base",
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "trust_remote_code": false
+    },
+    "outputs_dir": "outputs/2026-06-20/171106-a61dbe5e/jobs/cbf9b7a61ac1e75b",
+    "overlap": {
+      "enabled": true
+    },
+    "run_id": "score",
+    "scenarios": [
+      "finetuning"
+    ],
+    "seed": 29
+  },
+  "created_at": "2026-06-20T17:29:39.763306+00:00",
+  "overlap_status": "complete",
+  "run_id": "score",
+  "sample_summary": {
+    "authors": 32,
+    "group_membership": {
+      "G0:member": 8,
+      "G0:nonmember": 8,
+      "G1:member": 8,
+      "G1:nonmember": 8
+    },
+    "group_variety_membership": {
+      "G0:australia:member": 1,
+      "G0:brazil:member": 2,
+      "G0:brazil:nonmember": 2,
+      "G0:canada:member": 1,
+      "G0:chile:member": 1,
+      "G0:chile:nonmember": 1,
+      "G0:great britain:nonmember": 1,
+      "G0:gulf:nonmember": 1,
+      "G0:levantine:member": 2,
+      "G0:maghrebi:nonmember": 1,
+      "G0:mexico:member": 1,
+      "G0:mexico:nonmember": 1,
+      "G0:united states:nonmember": 1,
+      "G1:argentina:member": 1,
+      "G1:brazil:member": 1,
+      "G1:brazil:nonmember": 1,
+      "G1:canada:nonmember": 1,
+      "G1:egypt:member": 1,
+      "G1:great britain:nonmember": 1,
+      "G1:gulf:member": 1,
+      "G1:ireland:member": 1,
+      "G1:levantine:nonmember": 1,
+      "G1:maghrebi:nonmember": 1,
+      "G1:mexico:member": 1,
+      "G1:new zealand:member": 1,
+      "G1:peru:nonmember": 1,
+      "G1:portugal:member": 1,
+      "G1:portugal:nonmember": 1,
+      "G1:venezuela:nonmember": 1
+    },
+    "groups": {
+      "G0": 16,
+      "G1": 16
+    },
+    "is_four_cell_balanced": true,
+    "languages": {
+      "ar": 8,
+      "en": 8,
+      "es": 8,
+      "pt": 8
+    },
+    "membership": {
+      "member": 16,
+      "nonmember": 16
+    },
+    "total": 32,
+    "varieties": [
+      "argentina",
+      "australia",
+      "brazil",
+      "canada",
+      "chile",
+      "egypt",
+      "great britain",
+      "gulf",
+      "ireland",
+      "levantine",
+      "maghrebi",
+      "mexico",
+      "new zealand",
+      "peru",
+      "portugal",
+      "united states",
+      "venezuela"
+    ]
+  },
+  "scenarios": [
+    "finetuning"
+  ],
+  "seed": 29,
+  "status": "complete",
+  "version": "0.2.0"
+}

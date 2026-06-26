@@ -1,0 +1,44 @@
+{
+  "finished_at": "2026-06-22T20:58:28.537027+00:00",
+  "gpu": null,
+  "job": {
+    "adapter_dir": "artifacts/adapters/f1846b5016c676a5",
+    "attacks": [
+      "loss",
+      "reference"
+    ],
+    "bootstrap_replicates": 100,
+    "cache_dir": "artifacts/models",
+    "calibration_members_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl",
+    "calibration_nonmembers_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+    "dataset": "pan18_multilingual",
+    "dependencies": [
+      "d944e0761bfd8053"
+    ],
+    "epochs": 1,
+    "evaluation_tier": "full",
+    "evaluation_variant": "balanced_audit",
+    "job_hash": "2999756abccb5333",
+    "load_in_4bit": true,
+    "local_files_only": true,
+    "max_length": 256,
+    "members_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_members.jsonl",
+    "min_cell_members": 30,
+    "model": "qwen3_4b",
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "nonmembers_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_nonmembers.jsonl",
+    "primitive_job_hash": "d944e0761bfd8053",
+    "reference_model_id": "Qwen/Qwen3-4B-Base",
+    "seed": 29,
+    "stage": "attack_evaluation",
+    "study_name": "pilot_robustness_pan18",
+    "training_job_hash": "d74ececd2ddc2580",
+    "training_variant": "raw_full",
+    "trust_remote_code": false
+  },
+  "job_hash": "2999756abccb5333",
+  "stage": "attack_evaluation",
+  "started_at": "2026-06-22T20:58:28.468986+00:00",
+  "status": "success",
+  "study_name": "pilot_robustness_pan18"
+}

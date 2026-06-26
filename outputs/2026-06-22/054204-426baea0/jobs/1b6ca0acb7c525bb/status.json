@@ -1,0 +1,22 @@
+{
+  "finished_at": "2026-06-22T05:42:36.728062+00:00",
+  "gpu": null,
+  "job": {
+    "audit_cap_per_cell": 25,
+    "calibration_fraction": 0.2,
+    "dataset": "pan18_multilingual",
+    "dependencies": [],
+    "job_hash": "1b6ca0acb7c525bb",
+    "members_path": "data/pan18_multilingual/members.jsonl",
+    "nonmembers_path": "data/pan18_multilingual/nonmembers.jsonl",
+    "seed": 29,
+    "stage": "dataset_preparation",
+    "study_name": "pilot_robustness_pan18",
+    "variants_dir": "data/variants/pan18_multilingual/seed_29_audit_25"
+  },
+  "job_hash": "1b6ca0acb7c525bb",
+  "stage": "dataset_preparation",
+  "started_at": "2026-06-22T05:42:04.572727+00:00",
+  "status": "success",
+  "study_name": "pilot_robustness_pan18"
+}

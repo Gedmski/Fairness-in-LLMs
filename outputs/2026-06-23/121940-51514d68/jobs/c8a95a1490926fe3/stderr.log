@@ -1,0 +1,282 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]
+Loading weights:   1%|          | 3/398 [00:00<01:00,  6.49it/s]
+Loading weights:   1%|          | 4/398 [00:00<01:40,  3.92it/s]
+Loading weights:   1%|▏         | 5/398 [00:01<02:03,  3.18it/s]
+Loading weights:   2%|▏         | 9/398 [00:01<00:59,  6.57it/s]
+Loading weights:   3%|▎         | 11/398 [00:01<00:52,  7.38it/s]
+Loading weights:   4%|▎         | 14/398 [00:02<00:56,  6.76it/s]
+Loading weights:   4%|▍         | 15/398 [00:02<01:15,  5.06it/s]
+Loading weights:   4%|▍         | 16/398 [00:03<01:33,  4.10it/s]
+Loading weights:   5%|▌         | 20/398 [00:03<00:56,  6.67it/s]
+Loading weights:   6%|▌         | 22/398 [00:03<00:51,  7.33it/s]
+Loading weights:   6%|▋         | 25/398 [00:04<00:55,  6.73it/s]
+Loading weights:   7%|▋         | 26/398 [00:04<01:12,  5.13it/s]
+Loading weights:   7%|▋         | 27/398 [00:05<01:29,  4.16it/s]
+Loading weights:   8%|▊         | 31/398 [00:05<00:55,  6.60it/s]
+Loading weights:   8%|▊         | 33/398 [00:05<00:50,  7.26it/s]
+Loading weights:   9%|▉         | 36/398 [00:06<00:54,  6.69it/s]
+Loading weights:   9%|▉         | 37/398 [00:06<01:10,  5.13it/s]
+Loading weights:  10%|▉         | 38/398 [00:06<01:26,  4.18it/s]
+Loading weights:  11%|█         | 42/398 [00:07<00:53,  6.65it/s]
+Loading weights:  11%|█         | 44/398 [00:07<00:48,  7.34it/s]
+Loading weights:  12%|█▏        | 47/398 [00:07<00:51,  6.82it/s]
+Loading weights:  12%|█▏        | 48/398 [00:08<01:06,  5.23it/s]
+Loading weights:  12%|█▏        | 49/398 [00:08<01:22,  4.23it/s]
+Loading weights:  13%|█▎        | 53/398 [00:09<00:51,  6.71it/s]
+Loading weights:  14%|█▍        | 55/398 [00:09<00:46,  7.37it/s]
+Loading weights:  15%|█▍        | 58/398 [00:09<00:50,  6.75it/s]
+Loading weights:  15%|█▍        | 59/398 [00:10<01:04,  5.22it/s]
+Loading weights:  15%|█▌        | 60/398 [00:10<01:20,  4.21it/s]
+Loading weights:  16%|█▌        | 64/398 [00:10<00:50,  6.63it/s]
+Loading weights:  17%|█▋        | 66/398 [00:11<00:45,  7.28it/s]
+Loading weights:  17%|█▋        | 69/398 [00:11<00:48,  6.74it/s]
+Loading weights:  18%|█▊        | 70/398 [00:12<01:03,  5.20it/s]
+Loading weights:  18%|█▊        | 71/398 [00:12<01:17,  4.21it/s]
+Loading weights:  19%|█▉        | 75/398 [00:12<00:48,  6.65it/s]
+Loading weights:  19%|█▉        | 77/398 [00:12<00:43,  7.33it/s]
+Loading weights:  20%|██        | 80/398 [00:13<00:46,  6.82it/s]
+Loading weights:  20%|██        | 81/398 [00:13<01:00,  5.23it/s]
+Loading weights:  21%|██        | 82/398 [00:14<01:14,  4.25it/s]
+Loading weights:  22%|██▏       | 86/398 [00:14<00:46,  6.70it/s]
+Loading weights:  22%|██▏       | 88/398 [00:14<00:42,  7.34it/s]
+Loading weights:  23%|██▎       | 91/398 [00:15<00:45,  6.75it/s]
+Loading weights:  23%|██▎       | 92/398 [00:15<00:59,  5.16it/s]
+Loading weights:  23%|██▎       | 93/398 [00:16<01:13,  4.16it/s]
+Loading weights:  24%|██▍       | 97/398 [00:16<00:45,  6.58it/s]
+Loading weights:  25%|██▍       | 99/398 [00:16<00:41,  7.24it/s]
+Loading weights:  26%|██▌       | 102/398 [00:17<00:44,  6.65it/s]
+Loading weights:  26%|██▌       | 103/398 [00:17<00:58,  5.08it/s]
+Loading weights:  26%|██▌       | 104/398 [00:18<01:12,  4.08it/s]
+Loading weights:  27%|██▋       | 108/398 [00:18<00:44,  6.47it/s]
+Loading weights:  28%|██▊       | 110/398 [00:18<00:40,  7.16it/s]
+Loading weights:  28%|██▊       | 113/398 [00:19<00:43,  6.57it/s]
+Loading weights:  29%|██▊       | 114/398 [00:19<00:56,  5.07it/s]
+Loading weights:  29%|██▉       | 115/398 [00:20<01:09,  4.06it/s]
+Loading weights:  30%|██▉       | 119/398 [00:20<00:43,  6.45it/s]
+Loading weights:  30%|███       | 121/398 [00:20<00:38,  7.12it/s]
+Loading weights:  31%|███       | 124/398 [00:21<00:42,  6.48it/s]
+Loading weights:  31%|███▏      | 125/398 [00:21<00:55,  4.93it/s]
+Loading weights:  32%|███▏      | 126/398 [00:22<01:08,  3.97it/s]
+Loading weights:  33%|███▎      | 130/398 [00:22<00:42,  6.33it/s]
+Loading weights:  33%|███▎      | 132/398 [00:22<00:37,  7.02it/s]
+Loading weights:  34%|███▍      | 135/398 [00:22<00:40,  6.43it/s]
+Loading weights:  34%|███▍      | 136/398 [00:23<00:52,  4.96it/s]
+Loading weights:  34%|███▍      | 137/398 [00:23<01:05,  3.96it/s]
+Loading weights:  35%|███▌      | 141/398 [00:24<00:40,  6.32it/s]
+Loading weights:  36%|███▌      | 143/398 [00:24<00:36,  7.01it/s]
+Loading weights:  37%|███▋      | 146/398 [00:24<00:39,  6.40it/s]
+Loading weights:  37%|███▋      | 147/398 [00:25<00:51,  4.90it/s]
+Loading weights:  37%|███▋      | 148/398 [00:25<01:03,  3.96it/s]
+Loading weights:  38%|███▊      | 152/398 [00:26<00:38,  6.33it/s]
+Loading weights:  39%|███▊      | 154/398 [00:26<00:34,  7.04it/s]
+Loading weights:  39%|███▉      | 157/398 [00:26<00:37,  6.39it/s]
+Loading weights:  40%|███▉      | 158/398 [00:27<00:49,  4.85it/s]
+Loading weights:  40%|███▉      | 159/398 [00:27<01:01,  3.88it/s]
+Loading weights:  41%|████      | 163/398 [00:28<00:37,  6.22it/s]
+Loading weights:  41%|████▏     | 165/398 [00:28<00:33,  6.92it/s]
+Loading weights:  42%|████▏     | 168/398 [00:28<00:36,  6.28it/s]
+Loading weights:  42%|████▏     | 169/398 [00:29<00:48,  4.77it/s]
+Loading weights:  43%|████▎     | 170/398 [00:29<00:59,  3.86it/s]
+Loading weights:  44%|████▎     | 174/398 [00:30<00:36,  6.19it/s]
+Loading weights:  44%|████▍     | 176/398 [00:30<00:32,  6.87it/s]
+Loading weights:  45%|████▍     | 179/398 [00:30<00:35,  6.26it/s]
+Loading weights:  45%|████▌     | 180/398 [00:31<00:45,  4.77it/s]
+Loading weights:  45%|████▌     | 181/398 [00:31<00:56,  3.84it/s]
+Loading weights:  46%|████▋     | 185/398 [00:32<00:34,  6.15it/s]
+Loading weights:  47%|████▋     | 187/398 [00:32<00:30,  6.85it/s]
+Loading weights:  48%|████▊     | 190/398 [00:32<00:33,  6.22it/s]
+Loading weights:  48%|████▊     | 191/398 [00:33<00:43,  4.74it/s]
+Loading weights:  48%|████▊     | 192/398 [00:33<00:54,  3.80it/s]
+Loading weights:  49%|████▉     | 196/398 [00:34<00:33,  6.11it/s]
+Loading weights:  50%|████▉     | 198/398 [00:34<00:29,  6.79it/s]
+Loading weights:  51%|█████     | 201/398 [00:34<00:32,  6.11it/s]
+Loading weights:  51%|█████     | 202/398 [00:35<00:42,  4.62it/s]
+Loading weights:  51%|█████     | 203/398 [00:36<00:52,  3.72it/s]
+Loading weights:  52%|█████▏    | 207/398 [00:36<00:31,  6.00it/s]
+Loading weights:  53%|█████▎    | 209/398 [00:36<00:28,  6.72it/s]
+Loading weights:  53%|█████▎    | 212/398 [00:37<00:30,  6.07it/s]
+Loading weights:  54%|█████▎    | 213/398 [00:37<00:39,  4.63it/s]
+Loading weights:  54%|█████▍    | 214/398 [00:38<00:49,  3.73it/s]
+Loading weights:  55%|█████▍    | 218/398 [00:38<00:29,  6.04it/s]
+Loading weights:  55%|█████▌    | 220/398 [00:38<00:26,  6.76it/s]
+Loading weights:  56%|█████▌    | 223/398 [00:39<00:28,  6.06it/s]
+Loading weights:  56%|█████▋    | 224/398 [00:39<00:37,  4.60it/s]
+Loading weights:  57%|█████▋    | 225/398 [00:40<00:46,  3.70it/s]
+Loading weights:  58%|█████▊    | 229/398 [00:40<00:28,  5.99it/s]
+Loading weights:  58%|█████▊    | 231/398 [00:40<00:24,  6.72it/s]
+Loading weights:  59%|█████▉    | 234/398 [00:41<00:26,  6.08it/s]
+Loading weights:  59%|█████▉    | 235/398 [00:41<00:35,  4.58it/s]
+Loading weights:  59%|█████▉    | 236/398 [00:42<00:44,  3.67it/s]
+Loading weights:  60%|██████    | 240/398 [00:42<00:26,  5.94it/s]
+Loading weights:  61%|██████    | 242/398 [00:42<00:23,  6.62it/s]
+Loading weights:  62%|██████▏   | 245/398 [00:43<00:25,  6.00it/s]
+Loading weights:  62%|██████▏   | 246/398 [00:43<00:33,  4.52it/s]
+Loading weights:  62%|██████▏   | 247/398 [00:44<00:41,  3.63it/s]
+Loading weights:  63%|██████▎   | 251/398 [00:44<00:24,  5.89it/s]
+Loading weights:  64%|██████▎   | 253/398 [00:44<00:21,  6.61it/s]
+Loading weights:  64%|██████▍   | 256/398 [00:45<00:23,  5.97it/s]
+Loading weights:  65%|██████▍   | 257/398 [00:45<00:31,  4.52it/s]
+Loading weights:  65%|██████▍   | 258/398 [00:46<00:38,  3.64it/s]
+Loading weights:  66%|██████▌   | 262/398 [00:46<00:23,  5.90it/s]
+Loading weights:  66%|██████▋   | 264/398 [00:46<00:20,  6.60it/s]
+Loading weights:  67%|██████▋   | 267/398 [00:47<00:21,  5.96it/s]
+Loading weights:  67%|██████▋   | 268/398 [00:48<00:28,  4.51it/s]
+Loading weights:  68%|██████▊   | 269/398 [00:48<00:35,  3.61it/s]
+Loading weights:  69%|██████▊   | 273/398 [00:48<00:21,  5.87it/s]
+Loading weights:  69%|██████▉   | 275/398 [00:49<00:18,  6.60it/s]
+Loading weights:  70%|██████▉   | 278/398 [00:49<00:20,  5.95it/s]
+Loading weights:  70%|███████   | 279/398 [00:50<00:26,  4.48it/s]
+Loading weights:  70%|███████   | 280/398 [00:50<00:32,  3.58it/s]
+Loading weights:  71%|███████▏  | 284/398 [00:50<00:19,  5.83it/s]
+Loading weights:  72%|███████▏  | 286/398 [00:51<00:17,  6.56it/s]
+Loading weights:  73%|███████▎  | 289/398 [00:51<00:18,  5.90it/s]
+Loading weights:  73%|███████▎  | 290/398 [00:52<00:24,  4.44it/s]
+Loading weights:  73%|███████▎  | 291/398 [00:52<00:30,  3.55it/s]
+Loading weights:  74%|███████▍  | 295/398 [00:53<00:17,  5.80it/s]
+Loading weights:  75%|███████▍  | 297/398 [00:53<00:15,  6.52it/s]
+Loading weights:  75%|███████▌  | 300/398 [00:53<00:16,  5.83it/s]
+Loading weights:  76%|███████▌  | 301/398 [00:54<00:22,  4.36it/s]
+Loading weights:  76%|███████▌  | 302/398 [00:55<00:27,  3.48it/s]
+Loading weights:  77%|███████▋  | 306/398 [00:55<00:16,  5.71it/s]
+Loading weights:  77%|███████▋  | 308/398 [00:55<00:13,  6.44it/s]
+Loading weights:  78%|███████▊  | 311/398 [00:56<00:15,  5.74it/s]
+Loading weights:  78%|███████▊  | 312/398 [00:56<00:19,  4.34it/s]
+Loading weights:  79%|███████▊  | 313/398 [00:57<00:24,  3.49it/s]
+Loading weights:  80%|███████▉  | 317/398 [00:57<00:14,  5.72it/s]
+Loading weights:  80%|████████  | 319/398 [00:57<00:12,  6.45it/s]
+Loading weights:  81%|████████  | 322/398 [00:58<00:13,  5.73it/s]
+Loading weights:  81%|████████  | 323/398 [00:58<00:17,  4.29it/s]
+Loading weights:  81%|████████▏ | 324/398 [00:59<00:21,  3.42it/s]
+Loading weights:  82%|████████▏ | 328/398 [00:59<00:12,  5.60it/s]
+Loading weights:  83%|████████▎ | 330/398 [00:59<00:10,  6.32it/s]
+Loading weights:  84%|████████▎ | 333/398 [01:00<00:11,  5.60it/s]
+Loading weights:  84%|████████▍ | 334/398 [01:01<00:15,  4.17it/s]
+Loading weights:  84%|████████▍ | 335/398 [01:01<00:19,  3.31it/s]
+Loading weights:  85%|████████▌ | 339/398 [01:02<00:10,  5.45it/s]
+Loading weights:  86%|████████▌ | 341/398 [01:02<00:09,  6.19it/s]
+Loading weights:  86%|████████▋ | 344/398 [01:02<00:09,  5.51it/s]
+Loading weights:  87%|████████▋ | 345/398 [01:03<00:12,  4.12it/s]
+Loading weights:  87%|████████▋ | 346/398 [01:04<00:15,  3.28it/s]
+Loading weights:  88%|████████▊ | 350/398 [01:04<00:08,  5.42it/s]
+Loading weights:  88%|████████▊ | 352/398 [01:04<00:07,  6.17it/s]
+Loading weights:  89%|████████▉ | 355/398 [01:05<00:07,  5.47it/s]
+Loading weights:  89%|████████▉ | 356/398 [01:05<00:10,  4.10it/s]
+Loading weights:  90%|████████▉ | 357/398 [01:06<00:12,  3.26it/s]
+Loading weights:  91%|█████████ | 361/398 [01:06<00:06,  5.34it/s]
+Loading weights:  91%|█████████ | 363/398 [01:06<00:05,  6.02it/s]
+Loading weights:  92%|█████████▏| 366/398 [01:07<00:05,  5.36it/s]
+Loading weights:  92%|█████████▏| 367/398 [01:08<00:07,  4.02it/s]
+Loading weights:  92%|█████████▏| 368/398 [01:08<00:09,  3.20it/s]
+Loading weights:  93%|█████████▎| 372/398 [01:09<00:04,  5.27it/s]
+Loading weights:  94%|█████████▍| 374/398 [01:09<00:04,  5.96it/s]
+Loading weights:  95%|█████████▍| 377/398 [01:09<00:03,  5.33it/s]
+Loading weights:  95%|█████████▍| 378/398 [01:10<00:05,  4.00it/s]
+Loading weights:  95%|█████████▌| 379/398 [01:11<00:05,  3.19it/s]
+Loading weights:  96%|█████████▌| 383/398 [01:11<00:02,  5.22it/s]
+Loading weights:  97%|█████████▋| 385/398 [01:11<00:02,  5.87it/s]
+Loading weights:  97%|█████████▋| 388/398 [01:12<00:01,  5.28it/s]
+Loading weights:  98%|█████████▊| 389/398 [01:12<00:02,  3.96it/s]
+Loading weights:  98%|█████████▊| 390/398 [01:13<00:02,  3.16it/s]
+Loading weights:  99%|█████████▉| 394/398 [01:13<00:00,  5.14it/s]
+Loading weights:  99%|█████████▉| 396/398 [01:14<00:00,  5.76it/s]
+Loading weights: 100%|██████████| 398/398 [01:14<00:00,  5.37it/s]
+
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]
+Loading weights:  51%|█████     | 203/398 [00:00<00:00, 2015.58it/s]
+Loading weights: 100%|██████████| 398/398 [00:00<00:00, 3264.86it/s]
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/opt/conda/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 712, in <module>
+    raise SystemExit(main())
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 705, in main
+    execute_job_file(args.job_file, args.invocation_dir, args.gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 526, in execute_job_file
+    execute_job(job, invocation_dir, gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 455, in execute_job
+    run_benchmark(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 278, in run_benchmark
+    scenario_registry[scenario_name].run(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/scenarios/finetuning.py", line 24, in run
+    return score_samples_for_scenario(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/scenarios/base.py", line 48, in score_samples_for_scenario
+    score = attack.score(sample, target_model, reference_model)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/attacks/loss.py", line 14, in score
+    token_scores = target_model.score_tokens(sample.text, sample)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/models/huggingface.py", line 91, in score_tokens
+    outputs = self._model(input_ids=input_ids, attention_mask=attention_mask)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/peft/peft_model.py", line 1993, in forward
+    return self.base_model(
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/peft/tuners/tuners_utils.py", line 330, in forward
+    return self.model.forward(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/utils/generic.py", line 907, in wrapper
+    output = func(self, *args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 492, in forward
+    outputs: BaseModelOutputWithPast = self.model(
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/utils/generic.py", line 1036, in wrapper
+    output = func(self, *args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/utils/output_capturing.py", line 252, in wrapper
+    outputs = func(self, *args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 424, in forward
+    hidden_states = decoder_layer(
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/modeling_layers.py", line 93, in __call__
+    return super().__call__(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 332, in forward
+    hidden_states = self.mlp(hidden_states)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 82, in forward
+    down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/peft/tuners/lora/bnb.py", line 523, in forward
+    result = self.base_layer(x, *args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/bitsandbytes/nn/modules.py", line 556, in forward
+    return bnb.matmul_4bit(x, weight, bias=bias, quant_state=quant_state).to(inp_dtype)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py", line 387, in matmul_4bit
+    return MatMul4Bit.apply(A, B, out, bias, quant_state)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/autograd/function.py", line 575, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py", line 315, in forward
+    output = torch.nn.functional.linear(A, F.dequantize_4bit(B, quant_state).to(A.dtype).t(), bias)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/bitsandbytes/functional.py", line 1050, in dequantize_4bit
+    out = torch.ops.bitsandbytes.dequantize_4bit.default(
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/_ops.py", line 723, in __call__
+    return self._op(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/_compile.py", line 32, in inner
+    return disable_fn(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+    return fn(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/torch/library.py", line 597, in func_no_dynamo
+    return func(*args, **kwargs)
+  File "/home/gabriel/Fairness-in-LLMs/.venv-cu124/lib/python3.10/site-packages/bitsandbytes/backends/cpu/ops.py", line 207, in _
+    lib.cdequantize_blockwise_cpu_nf4_bf16(
+KeyboardInterrupt

@@ -1,0 +1,181 @@
+{
+  "attacks": [
+    "loss",
+    "reference"
+  ],
+  "config": {
+    "attacks": [
+      "loss",
+      "reference"
+    ],
+    "dataset": {
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "default_scenario": "finetuning",
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_members.jsonl",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_nonmembers.jsonl"
+    },
+    "evaluation": {
+      "bootstrap_replicates": 100,
+      "min_cell_members": 30
+    },
+    "model": {
+      "adapter_path": "artifacts/adapters/f268b838d97fa25e",
+      "backend": "hf",
+      "cache_dir": "artifacts/models",
+      "device_map": "auto",
+      "dtype": "bfloat16",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "perturbation_model_id": "FacebookAI/xlm-roberta-base",
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "trust_remote_code": false
+    },
+    "outputs_dir": "outputs/2026-06-21/210028-446e32d4/jobs/324db455e42bdd25",
+    "overlap": {
+      "enabled": true
+    },
+    "run_id": "score",
+    "scenarios": [
+      "finetuning"
+    ],
+    "seed": 29
+  },
+  "created_at": "2026-06-22T03:01:12.968259+00:00",
+  "overlap_status": "complete",
+  "run_id": "score",
+  "sample_summary": {
+    "authors": 13654,
+    "group_membership": {
+      "G0:member": 10280,
+      "G0:nonmember": 10315,
+      "G1:member": 10272,
+      "G1:nonmember": 10297
+    },
+    "group_variety_membership": {
+      "G0:argentina:member": 315,
+      "G0:argentina:nonmember": 281,
+      "G0:australia:member": 436,
+      "G0:australia:nonmember": 418,
+      "G0:brazil:member": 1361,
+      "G0:brazil:nonmember": 1387,
+      "G0:canada:member": 463,
+      "G0:canada:nonmember": 465,
+      "G0:chile:member": 365,
+      "G0:chile:nonmember": 398,
+      "G0:colombia:member": 340,
+      "G0:colombia:nonmember": 359,
+      "G0:egypt:member": 612,
+      "G0:egypt:nonmember": 653,
+      "G0:great britain:member": 374,
+      "G0:great britain:nonmember": 413,
+      "G0:gulf:member": 584,
+      "G0:gulf:nonmember": 633,
+      "G0:ireland:member": 406,
+      "G0:ireland:nonmember": 383,
+      "G0:levantine:member": 669,
+      "G0:levantine:nonmember": 643,
+      "G0:maghrebi:member": 692,
+      "G0:maghrebi:nonmember": 665,
+      "G0:mexico:member": 404,
+      "G0:mexico:nonmember": 410,
+      "G0:new zealand:member": 448,
+      "G0:new zealand:nonmember": 449,
+      "G0:peru:member": 358,
+      "G0:peru:nonmember": 325,
+      "G0:portugal:member": 1195,
+      "G0:portugal:nonmember": 1198,
+      "G0:spain:member": 403,
+      "G0:spain:nonmember": 416,
+      "G0:united states:member": 456,
+      "G0:united states:nonmember": 438,
+      "G0:venezuela:member": 399,
+      "G0:venezuela:nonmember": 381,
+      "G1:argentina:member": 306,
+      "G1:argentina:nonmember": 308,
+      "G1:australia:member": 432,
+      "G1:australia:nonmember": 454,
+      "G1:brazil:member": 1344,
+      "G1:brazil:nonmember": 1392,
+      "G1:canada:member": 414,
+      "G1:canada:nonmember": 441,
+      "G1:chile:member": 351,
+      "G1:chile:nonmember": 353,
+      "G1:colombia:member": 354,
+      "G1:colombia:nonmember": 338,
+      "G1:egypt:member": 616,
+      "G1:egypt:nonmember": 640,
+      "G1:great britain:member": 379,
+      "G1:great britain:nonmember": 446,
+      "G1:gulf:member": 610,
+      "G1:gulf:nonmember": 607,
+      "G1:ireland:member": 433,
+      "G1:ireland:nonmember": 390,
+      "G1:levantine:member": 626,
+      "G1:levantine:nonmember": 677,
+      "G1:maghrebi:member": 693,
+      "G1:maghrebi:nonmember": 634,
+      "G1:mexico:member": 406,
+      "G1:mexico:nonmember": 351,
+      "G1:new zealand:member": 437,
+      "G1:new zealand:nonmember": 404,
+      "G1:peru:member": 338,
+      "G1:peru:nonmember": 383,
+      "G1:portugal:member": 1237,
+      "G1:portugal:nonmember": 1189,
+      "G1:spain:member": 417,
+      "G1:spain:nonmember": 416,
+      "G1:united states:member": 467,
+      "G1:united states:nonmember": 450,
+      "G1:venezuela:member": 412,
+      "G1:venezuela:nonmember": 424
+    },
+    "groups": {
+      "G0": 20595,
+      "G1": 20569
+    },
+    "is_four_cell_balanced": false,
+    "languages": {
+      "ar": 10254,
+      "en": 10296,
+      "es": 10311,
+      "pt": 10303
+    },
+    "membership": {
+      "member": 20552,
+      "nonmember": 20612
+    },
+    "total": 41164,
+    "varieties": [
+      "argentina",
+      "australia",
+      "brazil",
+      "canada",
+      "chile",
+      "colombia",
+      "egypt",
+      "great britain",
+      "gulf",
+      "ireland",
+      "levantine",
+      "maghrebi",
+      "mexico",
+      "new zealand",
+      "peru",
+      "portugal",
+      "spain",
+      "united states",
+      "venezuela"
+    ]
+  },
+  "scenarios": [
+    "finetuning"
+  ],
+  "seed": 29,
+  "status": "complete",
+  "version": "0.2.0"
+}

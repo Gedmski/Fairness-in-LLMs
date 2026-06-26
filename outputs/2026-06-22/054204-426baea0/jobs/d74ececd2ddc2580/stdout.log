@@ -1,0 +1,4 @@
+{'loss': '3.686', 'grad_norm': '0.3742', 'learning_rate': '0.0001437', 'epoch': '0.3125'}
+{'loss': '3.622', 'grad_norm': '0.3645', 'learning_rate': '8.125e-05', 'epoch': '0.625'}
+{'loss': '3.525', 'grad_norm': '0.3813', 'learning_rate': '1.875e-05', 'epoch': '0.9375'}
+{'train_runtime': '444.5', 'train_samples_per_second': '1.152', 'train_steps_per_second': '0.072', 'train_loss': '3.611', 'epoch': '1'}

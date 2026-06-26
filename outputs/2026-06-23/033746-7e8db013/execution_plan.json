@@ -1,0 +1,451 @@
+{
+  "config_hash": "7e8db0133cfb87fd635b98d1",
+  "config_path": "/home/gabriel/Fairness-in-LLMs/configs/lora_studies.yaml",
+  "created_at": "2026-06-23T03:37:46.194561+00:00",
+  "estimated_artifacts": [
+    "resolved_config.yaml",
+    "execution_plan.json",
+    "runs.jsonl",
+    "failures.jsonl",
+    "summary.csv",
+    "metrics.csv",
+    "comparisons.csv",
+    "report.md",
+    "plots/",
+    "studies/",
+    "jobs/"
+  ],
+  "gpu_ids": [
+    0,
+    1
+  ],
+  "job_count": 12,
+  "jobs": [
+    {
+      "audit_cap_per_cell": 25,
+      "calibration_fraction": 0.2,
+      "dataset": "pan17_multilingual",
+      "dependencies": [],
+      "job_hash": "79caed6463b487b2",
+      "members_path": "data/pan17_multilingual/members.jsonl",
+      "nonmembers_path": "data/pan17_multilingual/nonmembers.jsonl",
+      "seed": 29,
+      "stage": "dataset_preparation",
+      "study_name": "pilot_model_family_pan17",
+      "variants_dir": "data/variants/pan17_multilingual/seed_29_audit_25"
+    },
+    {
+      "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+      "cache_dir": "artifacts/models",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "79caed6463b487b2"
+      ],
+      "epochs": 1,
+      "finetuning": {
+        "alpha": 32,
+        "dropout": 0.05,
+        "gradient_accumulation_steps": 16,
+        "gradient_checkpointing": true,
+        "learning_rate": 0.0002,
+        "max_length": 256,
+        "per_device_train_batch_size": 1,
+        "rank": 16
+      },
+      "job_hash": "6e9105feea81a21b",
+      "load_in_4bit": false,
+      "max_train_samples": 512,
+      "model": "olmo2_1b",
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "planned_gpu": 0,
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "seed": 29,
+      "stage": "training",
+      "study_name": "pilot_model_family_pan17",
+      "train_jsonl": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/train_members.jsonl",
+      "training_variant": "balanced"
+    },
+    {
+      "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+      "cache_dir": "artifacts/models",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "79caed6463b487b2"
+      ],
+      "epochs": 1,
+      "finetuning": {
+        "alpha": 32,
+        "dropout": 0.05,
+        "gradient_accumulation_steps": 16,
+        "gradient_checkpointing": true,
+        "learning_rate": 0.0002,
+        "max_length": 256,
+        "per_device_train_batch_size": 1,
+        "rank": 16
+      },
+      "job_hash": "7dbdc82d8d84e1eb",
+      "load_in_4bit": true,
+      "max_train_samples": 512,
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "planned_gpu": 1,
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "seed": 29,
+      "stage": "training",
+      "study_name": "pilot_model_family_pan17",
+      "train_jsonl": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/train_members.jsonl",
+      "training_variant": "balanced"
+    },
+    {
+      "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+      "attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "6e9105feea81a21b"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "audit",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "1431bc25ce94dace",
+      "load_in_4bit": false,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl",
+      "min_cell_members": 30,
+      "model": "olmo2_1b",
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl",
+      "planned_gpu": 0,
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "seed": 29,
+      "stage": "primitive_scoring",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "6e9105feea81a21b",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+      "attacks": [
+        "loss",
+        "reference"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "7dbdc82d8d84e1eb"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "479567c15ca4ca6d",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+      "min_cell_members": 30,
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+      "planned_gpu": 1,
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "seed": 29,
+      "stage": "primitive_scoring",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "7dbdc82d8d84e1eb",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+      "attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "7dbdc82d8d84e1eb"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "audit",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "61ed88e85b616fc1",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl",
+      "min_cell_members": 30,
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl",
+      "planned_gpu": 0,
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "seed": 29,
+      "stage": "primitive_scoring",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "7dbdc82d8d84e1eb",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+      "attacks": [
+        "loss",
+        "reference"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "6e9105feea81a21b"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "bf68ebef89b37f07",
+      "load_in_4bit": false,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+      "min_cell_members": 30,
+      "model": "olmo2_1b",
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+      "planned_gpu": 1,
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "seed": 29,
+      "stage": "primitive_scoring",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "6e9105feea81a21b",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+      "attacks": [
+        "loss",
+        "reference"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "bf68ebef89b37f07"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "0f98ced05c862516",
+      "load_in_4bit": false,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+      "min_cell_members": 30,
+      "model": "olmo2_1b",
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+      "primitive_job_hash": "bf68ebef89b37f07",
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "seed": 29,
+      "stage": "attack_evaluation",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "6e9105feea81a21b",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+      "attacks": [
+        "loss",
+        "reference"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "479567c15ca4ca6d"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "2a4fa0efa62105ed",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+      "min_cell_members": 30,
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+      "primitive_job_hash": "479567c15ca4ca6d",
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "seed": 29,
+      "stage": "attack_evaluation",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "7dbdc82d8d84e1eb",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+      "attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "1431bc25ce94dace"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "audit",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "4dadee939ef00a97",
+      "load_in_4bit": false,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl",
+      "min_cell_members": 30,
+      "model": "olmo2_1b",
+      "model_id": "allenai/OLMo-2-0425-1B",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl",
+      "primitive_job_hash": "1431bc25ce94dace",
+      "reference_model_id": "allenai/OLMo-2-0425-1B",
+      "seed": 29,
+      "stage": "attack_evaluation",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "6e9105feea81a21b",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+      "attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "bootstrap_replicates": 100,
+      "cache_dir": "artifacts/models",
+      "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "dataset": "pan17_multilingual",
+      "dependencies": [
+        "61ed88e85b616fc1"
+      ],
+      "epochs": 1,
+      "evaluation_tier": "audit",
+      "evaluation_variant": "balanced_audit",
+      "job_hash": "7b0b8c42d463ac6d",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl",
+      "min_cell_members": 30,
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl",
+      "primitive_job_hash": "61ed88e85b616fc1",
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "seed": 29,
+      "stage": "attack_evaluation",
+      "study_name": "pilot_model_family_pan17",
+      "training_job_hash": "7dbdc82d8d84e1eb",
+      "training_variant": "balanced",
+      "trust_remote_code": false
+    },
+    {
+      "dependencies": [
+        "2a4fa0efa62105ed",
+        "7b0b8c42d463ac6d",
+        "0f98ced05c862516",
+        "4dadee939ef00a97"
+      ],
+      "job_hash": "8334eeef02e5577a",
+      "resolved_experiment_count": 2,
+      "stage": "metrics_reporting"
+    }
+  ],
+  "resolved_experiments": [
+    {
+      "attacks": [],
+      "audit_attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "audit_cap_per_cell": 25,
+      "bootstrap_replicates": 100,
+      "dataset": "pan17_multilingual",
+      "epochs": 1,
+      "evaluation_variant": "balanced_audit",
+      "full_attacks": [
+        "loss",
+        "reference"
+      ],
+      "historical": false,
+      "max_train_samples": 512,
+      "model": "qwen3_4b",
+      "seed": 29,
+      "study_name": "pilot_model_family_pan17",
+      "training_variant": "balanced"
+    },
+    {
+      "attacks": [],
+      "audit_attacks": [
+        "loss",
+        "reference",
+        "zlib",
+        "min_k"
+      ],
+      "audit_cap_per_cell": 25,
+      "bootstrap_replicates": 100,
+      "dataset": "pan17_multilingual",
+      "epochs": 1,
+      "evaluation_variant": "balanced_audit",
+      "full_attacks": [
+        "loss",
+        "reference"
+      ],
+      "historical": false,
+      "max_train_samples": 512,
+      "model": "olmo2_1b",
+      "seed": 29,
+      "study_name": "pilot_model_family_pan17",
+      "training_variant": "balanced"
+    }
+  ],
+  "scoring_job_count": 4,
+  "training_job_count": 2
+}

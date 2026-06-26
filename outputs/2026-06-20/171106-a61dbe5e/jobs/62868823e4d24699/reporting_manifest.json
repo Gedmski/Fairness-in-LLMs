@@ -1,0 +1,4 @@
+{
+  "aggregation": "completed by parent runner after durable job status is written",
+  "resolved_experiment_count": 1
+}

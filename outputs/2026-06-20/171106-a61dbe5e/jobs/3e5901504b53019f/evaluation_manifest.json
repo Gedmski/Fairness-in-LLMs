@@ -1,0 +1,11 @@
+{
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k"
+  ],
+  "evaluation_tier": "full",
+  "evaluation_variant": "balanced_audit",
+  "primitive_job_hash": "9173e6c6d105ec63"
+}

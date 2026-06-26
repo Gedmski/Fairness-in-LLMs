@@ -1,0 +1,13 @@
+{
+  "completed": 2000,
+  "detail": "evaluation sample 1000/41224 attack=reference id=ar:train:171aae5b6960241b27a9cfc3e25efbdd:w6",
+  "elapsed_seconds": 91321.62,
+  "eta_seconds": 4613568.33,
+  "label": "pilot_training_exposure_pan17:full:c8a95a14",
+  "percent": 1.94,
+  "phase": "evaluation_scoring",
+  "rate_per_second": 0.021901,
+  "started_at": "2026-06-24T07:06:18.240502+00:00",
+  "total": 103040,
+  "updated_at": "2026-06-25T08:28:19.862313+00:00"
+}

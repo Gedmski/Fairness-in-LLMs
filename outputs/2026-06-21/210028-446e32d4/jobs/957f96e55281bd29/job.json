@@ -1,0 +1,37 @@
+{
+  "adapter_dir": "artifacts/adapters/f268b838d97fa25e",
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k"
+  ],
+  "bootstrap_replicates": 100,
+  "cache_dir": "artifacts/models",
+  "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl",
+  "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+  "dataset": "pan17_multilingual",
+  "dependencies": [
+    "a1f73bc629564ede"
+  ],
+  "epochs": 1,
+  "evaluation_tier": "audit",
+  "evaluation_variant": "balanced_audit",
+  "job_hash": "957f96e55281bd29",
+  "load_in_4bit": true,
+  "local_files_only": true,
+  "max_length": 256,
+  "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_members.jsonl",
+  "min_cell_members": 30,
+  "model": "qwen3_4b",
+  "model_id": "Qwen/Qwen3-4B-Base",
+  "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_nonmembers.jsonl",
+  "planned_gpu": 0,
+  "reference_model_id": "Qwen/Qwen3-4B-Base",
+  "seed": 29,
+  "stage": "primitive_scoring",
+  "study_name": "pilot_training_distribution_pan17",
+  "training_job_hash": "a1f73bc629564ede",
+  "training_variant": "raw_full",
+  "trust_remote_code": false
+}

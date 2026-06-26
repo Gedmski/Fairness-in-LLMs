@@ -1,0 +1,384 @@
+config_hash: 446e32d4048f2505203115c9
+config_path: /home/gabriel/Fairness-in-LLMs/configs/lora_studies.yaml
+created_at: '2026-06-21T21:00:28.007415+00:00'
+estimated_artifacts:
+- resolved_config.yaml
+- execution_plan.json
+- runs.jsonl
+- failures.jsonl
+- summary.csv
+- metrics.csv
+- comparisons.csv
+- report.md
+- plots/
+- studies/
+- jobs/
+gpu_ids:
+- 0
+- 1
+job_count: 12
+jobs:
+- audit_cap_per_cell: 25
+  calibration_fraction: 0.2
+  dataset: pan17_multilingual
+  dependencies: []
+  job_hash: 79caed6463b487b2
+  members_path: data/pan17_multilingual/members.jsonl
+  nonmembers_path: data/pan17_multilingual/nonmembers.jsonl
+  seed: 29
+  stage: dataset_preparation
+  study_name: pilot_training_distribution_pan17
+  variants_dir: data/variants/pan17_multilingual/seed_29_audit_25
+- adapter_dir: artifacts/adapters/87ff6923a0cd67e3
+  cache_dir: artifacts/models
+  dataset: pan17_multilingual
+  dependencies:
+  - 79caed6463b487b2
+  epochs: 1
+  finetuning:
+    alpha: 32
+    dropout: 0.05
+    gradient_accumulation_steps: 16
+    gradient_checkpointing: true
+    learning_rate: 0.0002
+    max_length: 256
+    per_device_train_batch_size: 1
+    rank: 16
+  job_hash: 7dbdc82d8d84e1eb
+  load_in_4bit: true
+  max_train_samples: 512
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  planned_gpu: 0
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: training
+  study_name: pilot_training_distribution_pan17
+  train_jsonl: data/variants/pan17_multilingual/seed_29_audit_25/balanced/train_members.jsonl
+  training_variant: balanced
+- adapter_dir: artifacts/adapters/f268b838d97fa25e
+  cache_dir: artifacts/models
+  dataset: pan17_multilingual
+  dependencies:
+  - 79caed6463b487b2
+  epochs: 1
+  finetuning:
+    alpha: 32
+    dropout: 0.05
+    gradient_accumulation_steps: 16
+    gradient_checkpointing: true
+    learning_rate: 0.0002
+    max_length: 256
+    per_device_train_batch_size: 1
+    rank: 16
+  job_hash: a1f73bc629564ede
+  load_in_4bit: true
+  max_train_samples: 512
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  planned_gpu: 1
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: training
+  study_name: pilot_training_distribution_pan17
+  train_jsonl: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/train_members.jsonl
+  training_variant: raw_full
+- adapter_dir: artifacts/adapters/f268b838d97fa25e
+  attacks:
+  - loss
+  - reference
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - a1f73bc629564ede
+  epochs: 1
+  evaluation_tier: full
+  evaluation_variant: balanced_audit
+  job_hash: 324db455e42bdd25
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_nonmembers.jsonl
+  planned_gpu: 0
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: primitive_scoring
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: a1f73bc629564ede
+  training_variant: raw_full
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/87ff6923a0cd67e3
+  attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - 7dbdc82d8d84e1eb
+  epochs: 1
+  evaluation_tier: audit
+  evaluation_variant: balanced_audit
+  job_hash: 63b45aecb1df2529
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl
+  planned_gpu: 1
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: primitive_scoring
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: 7dbdc82d8d84e1eb
+  training_variant: balanced
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/f268b838d97fa25e
+  attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - a1f73bc629564ede
+  epochs: 1
+  evaluation_tier: audit
+  evaluation_variant: balanced_audit
+  job_hash: 957f96e55281bd29
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_nonmembers.jsonl
+  planned_gpu: 0
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: primitive_scoring
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: a1f73bc629564ede
+  training_variant: raw_full
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/87ff6923a0cd67e3
+  attacks:
+  - loss
+  - reference
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - 7dbdc82d8d84e1eb
+  epochs: 1
+  evaluation_tier: full
+  evaluation_variant: balanced_audit
+  job_hash: a0c501e0d05071c1
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl
+  planned_gpu: 1
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: primitive_scoring
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: 7dbdc82d8d84e1eb
+  training_variant: balanced
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/f268b838d97fa25e
+  attacks:
+  - loss
+  - reference
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - 324db455e42bdd25
+  epochs: 1
+  evaluation_tier: full
+  evaluation_variant: balanced_audit
+  job_hash: 29777994f0c4201b
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_nonmembers.jsonl
+  primitive_job_hash: 324db455e42bdd25
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: attack_evaluation
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: a1f73bc629564ede
+  training_variant: raw_full
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/87ff6923a0cd67e3
+  attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - 63b45aecb1df2529
+  epochs: 1
+  evaluation_tier: audit
+  evaluation_variant: balanced_audit
+  job_hash: 2e1f62d84b3426ad
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/audit_nonmembers.jsonl
+  primitive_job_hash: 63b45aecb1df2529
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: attack_evaluation
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: 7dbdc82d8d84e1eb
+  training_variant: balanced
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/87ff6923a0cd67e3
+  attacks:
+  - loss
+  - reference
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - a0c501e0d05071c1
+  epochs: 1
+  evaluation_tier: full
+  evaluation_variant: balanced_audit
+  job_hash: 3043ea39df95de37
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl
+  primitive_job_hash: a0c501e0d05071c1
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: attack_evaluation
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: 7dbdc82d8d84e1eb
+  training_variant: balanced
+  trust_remote_code: false
+- adapter_dir: artifacts/adapters/f268b838d97fa25e
+  attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  bootstrap_replicates: 100
+  cache_dir: artifacts/models
+  calibration_members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl
+  calibration_nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl
+  dataset: pan17_multilingual
+  dependencies:
+  - 957f96e55281bd29
+  epochs: 1
+  evaluation_tier: audit
+  evaluation_variant: balanced_audit
+  job_hash: 65a27dc4d2370a2f
+  load_in_4bit: true
+  local_files_only: true
+  max_length: 256
+  members_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_members.jsonl
+  min_cell_members: 30
+  model: qwen3_4b
+  model_id: Qwen/Qwen3-4B-Base
+  nonmembers_path: data/variants/pan17_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/audit_nonmembers.jsonl
+  primitive_job_hash: 957f96e55281bd29
+  reference_model_id: Qwen/Qwen3-4B-Base
+  seed: 29
+  stage: attack_evaluation
+  study_name: pilot_training_distribution_pan17
+  training_job_hash: a1f73bc629564ede
+  training_variant: raw_full
+  trust_remote_code: false
+resolved_experiments:
+- attacks: []
+  audit_attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  audit_cap_per_cell: 25
+  bootstrap_replicates: 100
+  dataset: pan17_multilingual
+  epochs: 1
+  evaluation_variant: balanced_audit
+  full_attacks:
+  - loss
+  - reference
+  historical: false
+  max_train_samples: 512
+  model: qwen3_4b
+  seed: 29
+  study_name: pilot_training_distribution_pan17
+  training_variant: raw_full
+- attacks: []
+  audit_attacks:
+  - loss
+  - reference
+  - zlib
+  - min_k
+  audit_cap_per_cell: 25
+  bootstrap_replicates: 100
+  dataset: pan17_multilingual
+  epochs: 1
+  evaluation_variant: balanced_audit
+  full_attacks:
+  - loss
+  - reference
+  historical: false
+  max_train_samples: 512
+  model: qwen3_4b
+  seed: 29
+  study_name: pilot_training_distribution_pan17
+  training_variant: balanced
+scoring_job_count: 4
+training_job_count: 2

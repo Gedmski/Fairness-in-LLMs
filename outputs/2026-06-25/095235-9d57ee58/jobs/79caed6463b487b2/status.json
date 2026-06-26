@@ -1,0 +1,22 @@
+{
+  "finished_at": "2026-06-25T09:53:13.076138+00:00",
+  "gpu": null,
+  "job": {
+    "audit_cap_per_cell": 25,
+    "calibration_fraction": 0.2,
+    "dataset": "pan17_multilingual",
+    "dependencies": [],
+    "job_hash": "79caed6463b487b2",
+    "members_path": "data/pan17_multilingual/members.jsonl",
+    "nonmembers_path": "data/pan17_multilingual/nonmembers.jsonl",
+    "seed": 29,
+    "stage": "dataset_preparation",
+    "study_name": "pilot_training_exposure_pan17",
+    "variants_dir": "data/variants/pan17_multilingual/seed_29_audit_25"
+  },
+  "job_hash": "79caed6463b487b2",
+  "stage": "dataset_preparation",
+  "started_at": "2026-06-25T09:52:35.975211+00:00",
+  "status": "success",
+  "study_name": "pilot_training_exposure_pan17"
+}

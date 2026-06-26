@@ -1,0 +1,40 @@
+{
+  "finished_at": "2026-06-20T13:47:06.002149+00:00",
+  "gpu": 0,
+  "job": {
+    "adapter_dir": "artifacts/adapters/191482bca52420b4",
+    "cache_dir": "artifacts/models",
+    "dataset": "pan17_multilingual",
+    "dependencies": [
+      "a88315b75b8ee808"
+    ],
+    "epochs": 1,
+    "finetuning": {
+      "alpha": 32,
+      "dropout": 0.05,
+      "gradient_accumulation_steps": 16,
+      "gradient_checkpointing": true,
+      "learning_rate": 0.0002,
+      "max_length": 256,
+      "per_device_train_batch_size": 1,
+      "rank": 16
+    },
+    "job_hash": "cb4f50089c2e5260",
+    "load_in_4bit": false,
+    "max_train_samples": 64,
+    "model": "olmo2_1b",
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "planned_gpu": 0,
+    "reference_model_id": "allenai/OLMo-2-0425-1B",
+    "seed": 29,
+    "stage": "training",
+    "study_name": "smoke_olmo_lora",
+    "train_jsonl": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/train_members.jsonl",
+    "training_variant": "balanced"
+  },
+  "job_hash": "cb4f50089c2e5260",
+  "stage": "training",
+  "started_at": "2026-06-20T13:46:26.789664+00:00",
+  "status": "success",
+  "study_name": "smoke_olmo_lora"
+}

@@ -1,0 +1,29 @@
+{
+  "evaluated_members_per_nonmember": 150,
+  "evaluated_nonmembers": 150,
+  "member_count": 150,
+  "n_grams": {
+    "13": {
+      "flagged_pairs": [],
+      "max_overlap": 0.166667,
+      "mean_max_overlap": 0.001111,
+      "pairs_above_threshold": 0
+    },
+    "4": {
+      "flagged_pairs": [],
+      "max_overlap": 0.266667,
+      "mean_max_overlap": 0.004006,
+      "pairs_above_threshold": 0
+    },
+    "7": {
+      "flagged_pairs": [],
+      "max_overlap": 0.236111,
+      "mean_max_overlap": 0.002107,
+      "pairs_above_threshold": 0
+    }
+  },
+  "nonmember_count": 150,
+  "sampled": false,
+  "status": "complete",
+  "total_pairs_evaluated": 22500
+}

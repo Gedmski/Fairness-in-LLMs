@@ -1,0 +1,13 @@
+{
+  "completed": 103040,
+  "detail": "writing records and bootstrap metrics",
+  "elapsed_seconds": 91879.83,
+  "eta_seconds": 0.0,
+  "label": "pilot_training_exposure_pan17:full:5487eda8",
+  "percent": 100.0,
+  "phase": "reporting",
+  "rate_per_second": 1.121465,
+  "started_at": "2026-06-24T06:15:11.306461+00:00",
+  "total": 103040,
+  "updated_at": "2026-06-25T07:46:31.131980+00:00"
+}

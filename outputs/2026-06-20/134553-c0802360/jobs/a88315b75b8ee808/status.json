@@ -1,0 +1,22 @@
+{
+  "finished_at": "2026-06-20T13:46:26.617914+00:00",
+  "gpu": null,
+  "job": {
+    "audit_cap_per_cell": 8,
+    "calibration_fraction": 0.2,
+    "dataset": "pan17_multilingual",
+    "dependencies": [],
+    "job_hash": "a88315b75b8ee808",
+    "members_path": "data/pan17_multilingual/members.jsonl",
+    "nonmembers_path": "data/pan17_multilingual/nonmembers.jsonl",
+    "seed": 29,
+    "stage": "dataset_preparation",
+    "study_name": "smoke_olmo_lora",
+    "variants_dir": "data/variants/pan17_multilingual/seed_29_audit_8"
+  },
+  "job_hash": "a88315b75b8ee808",
+  "stage": "dataset_preparation",
+  "started_at": "2026-06-20T13:45:53.819066+00:00",
+  "status": "success",
+  "study_name": "smoke_olmo_lora"
+}

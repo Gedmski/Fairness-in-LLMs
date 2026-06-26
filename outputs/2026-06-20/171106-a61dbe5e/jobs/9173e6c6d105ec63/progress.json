@@ -1,0 +1,13 @@
+{
+  "completed": 206080,
+  "detail": "benchmark artifacts complete",
+  "elapsed_seconds": 13619.57,
+  "eta_seconds": 0.0,
+  "label": "smoke_olmo_lora_fast:full:9173e6c6",
+  "percent": 100.0,
+  "phase": "complete",
+  "rate_per_second": 15.131166,
+  "started_at": "2026-06-20T17:12:06.178901+00:00",
+  "total": 206080,
+  "updated_at": "2026-06-20T20:59:05.750966+00:00"
+}

@@ -1,0 +1,90 @@
+{
+  "attacks": [
+    "loss",
+    "reference"
+  ],
+  "config": {
+    "attacks": [
+      "loss",
+      "reference"
+    ],
+    "dataset": {
+      "calibration_members_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_members.jsonl",
+      "calibration_nonmembers_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+      "default_scenario": "finetuning",
+      "evaluation_tier": "full",
+      "evaluation_variant": "balanced_audit",
+      "members_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_members.jsonl",
+      "nonmembers_path": "data/variants/pan18_multilingual/seed_29_audit_25/raw_full/evaluation/balanced_audit/test_nonmembers.jsonl"
+    },
+    "evaluation": {
+      "bootstrap_replicates": 100,
+      "min_cell_members": 30
+    },
+    "model": {
+      "adapter_path": "artifacts/adapters/f1846b5016c676a5",
+      "backend": "hf",
+      "cache_dir": "artifacts/models",
+      "device_map": "auto",
+      "dtype": "bfloat16",
+      "load_in_4bit": true,
+      "local_files_only": true,
+      "max_length": 256,
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "perturbation_model_id": "FacebookAI/xlm-roberta-base",
+      "reference_model_id": "Qwen/Qwen3-4B-Base",
+      "trust_remote_code": false
+    },
+    "outputs_dir": "outputs/2026-06-22/054204-426baea0/jobs/d944e0761bfd8053",
+    "overlap": {
+      "enabled": true
+    },
+    "run_id": "score",
+    "scenarios": [
+      "finetuning"
+    ],
+    "seed": 29
+  },
+  "created_at": "2026-06-22T20:58:23.720153+00:00",
+  "overlap_status": "complete",
+  "run_id": "score",
+  "sample_summary": {
+    "authors": 10023,
+    "group_membership": {
+      "G0:member": 15028,
+      "G0:nonmember": 15014,
+      "G1:member": 14954,
+      "G1:nonmember": 14971
+    },
+    "group_variety_membership": {
+      "G0:unknown:member": 15028,
+      "G0:unknown:nonmember": 15014,
+      "G1:unknown:member": 14954,
+      "G1:unknown:nonmember": 14971
+    },
+    "groups": {
+      "G0": 30042,
+      "G1": 29925
+    },
+    "is_four_cell_balanced": false,
+    "languages": {
+      "ar": 19946,
+      "en": 19931,
+      "es": 20090
+    },
+    "membership": {
+      "member": 29982,
+      "nonmember": 29985
+    },
+    "total": 59967,
+    "varieties": [
+      "unknown"
+    ]
+  },
+  "scenarios": [
+    "finetuning"
+  ],
+  "seed": 29,
+  "status": "complete",
+  "version": "0.2.0"
+}

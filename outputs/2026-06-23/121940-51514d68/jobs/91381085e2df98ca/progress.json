@@ -1,0 +1,13 @@
+{
+  "completed": 42784,
+  "detail": "benchmark artifacts complete",
+  "elapsed_seconds": 3064.34,
+  "eta_seconds": 0.0,
+  "label": "pilot_training_exposure_pan17:audit:91381085",
+  "percent": 100.0,
+  "phase": "complete",
+  "rate_per_second": 13.961878,
+  "started_at": "2026-06-24T06:15:09.976059+00:00",
+  "total": 42784,
+  "updated_at": "2026-06-24T07:06:14.320259+00:00"
+}

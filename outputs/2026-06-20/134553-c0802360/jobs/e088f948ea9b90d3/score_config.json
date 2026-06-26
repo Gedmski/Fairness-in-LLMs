@@ -1,0 +1,47 @@
+{
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k",
+    "neighborhood",
+    "min_k_plus_plus",
+    "wbc"
+  ],
+  "dataset": {
+    "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+    "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+    "default_scenario": "finetuning",
+    "evaluation_tier": "full",
+    "evaluation_variant": "balanced_audit",
+    "members_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/test_members.jsonl",
+    "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_8/balanced/evaluation/balanced_audit/test_nonmembers.jsonl"
+  },
+  "evaluation": {
+    "bootstrap_replicates": 1000,
+    "min_cell_members": 30
+  },
+  "model": {
+    "adapter_path": "artifacts/adapters/191482bca52420b4",
+    "backend": "hf",
+    "cache_dir": "artifacts/models",
+    "device_map": "auto",
+    "dtype": "bfloat16",
+    "load_in_4bit": false,
+    "local_files_only": true,
+    "max_length": 256,
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "perturbation_model_id": "FacebookAI/xlm-roberta-base",
+    "reference_model_id": "allenai/OLMo-2-0425-1B",
+    "trust_remote_code": false
+  },
+  "outputs_dir": "outputs/2026-06-20/134553-c0802360/jobs/e088f948ea9b90d3",
+  "overlap": {
+    "enabled": true
+  },
+  "run_id": "score",
+  "scenarios": [
+    "finetuning"
+  ],
+  "seed": 29
+}

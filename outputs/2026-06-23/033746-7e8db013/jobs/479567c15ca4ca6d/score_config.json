@@ -1,0 +1,42 @@
+{
+  "attacks": [
+    "loss",
+    "reference"
+  ],
+  "dataset": {
+    "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+    "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+    "default_scenario": "finetuning",
+    "evaluation_tier": "full",
+    "evaluation_variant": "balanced_audit",
+    "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+    "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl"
+  },
+  "evaluation": {
+    "bootstrap_replicates": 100,
+    "min_cell_members": 30
+  },
+  "model": {
+    "adapter_path": "artifacts/adapters/87ff6923a0cd67e3",
+    "backend": "hf",
+    "cache_dir": "artifacts/models",
+    "device_map": "auto",
+    "dtype": "bfloat16",
+    "load_in_4bit": true,
+    "local_files_only": true,
+    "max_length": 256,
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "perturbation_model_id": "FacebookAI/xlm-roberta-base",
+    "reference_model_id": "Qwen/Qwen3-4B-Base",
+    "trust_remote_code": false
+  },
+  "outputs_dir": "outputs/2026-06-23/033746-7e8db013/jobs/479567c15ca4ca6d",
+  "overlap": {
+    "enabled": true
+  },
+  "run_id": "score",
+  "scenarios": [
+    "finetuning"
+  ],
+  "seed": 29
+}

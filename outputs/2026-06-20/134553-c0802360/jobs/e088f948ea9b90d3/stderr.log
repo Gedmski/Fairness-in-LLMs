@@ -1,0 +1,53 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/179 [00:00<?, ?it/s]
+Loading weights:   1%|          | 1/179 [00:00<00:49,  3.57it/s]
+Loading weights:  26%|██▋       | 47/179 [00:00<00:00, 154.95it/s]
+Loading weights:  45%|████▍     | 80/179 [00:00<00:00, 207.43it/s]
+Loading weights:  63%|██████▎   | 113/179 [00:00<00:00, 235.94it/s]
+Loading weights:  82%|████████▏ | 147/179 [00:00<00:00, 265.34it/s]
+Loading weights: 100%|██████████| 179/179 [00:00<00:00, 226.95it/s]
+
+Loading weights:   0%|          | 0/179 [00:00<?, ?it/s]
+Loading weights:   1%|          | 1/179 [00:00<00:44,  3.99it/s]
+Loading weights:   1%|          | 2/179 [00:00<00:30,  5.89it/s]
+Loading weights:  27%|██▋       | 49/179 [00:00<00:00, 156.28it/s]
+Loading weights:  46%|████▌     | 82/179 [00:00<00:00, 208.04it/s]
+Loading weights:  63%|██████▎   | 113/179 [00:00<00:00, 237.28it/s]
+Loading weights:  83%|████████▎ | 148/179 [00:00<00:00, 271.17it/s]
+Loading weights: 100%|██████████| 179/179 [00:00<00:00, 209.85it/s]
+
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 202/202 [00:00<00:00, 4836.89it/s]
+[transformers] [1mXLMRobertaForMaskedLM LOAD REPORT[0m from: FacebookAI/xlm-roberta-base
+Key                         | Status     |  | 
+----------------------------+------------+--+-
+roberta.pooler.dense.weight | UNEXPECTED |  | 
+roberta.pooler.dense.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/opt/conda/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 664, in <module>
+    raise SystemExit(main())
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 657, in main
+    execute_job_file(args.job_file, args.invocation_dir, args.gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 514, in execute_job_file
+    execute_job(job, invocation_dir, gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 449, in execute_job
+    run_benchmark(load_config(config_path))
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 245, in run_benchmark
+    scenario_registry[scenario_name].run(samples, attacks, target_model, reference_model, defense)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/scenarios/finetuning.py", line 23, in run
+    return score_samples_for_scenario(self.name, samples, attacks, target_model, reference_model, defense)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/scenarios/base.py", line 41, in score_samples_for_scenario
+    score = attack.score(sample, target_model, reference_model)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/attacks/neighborhood.py", line 24, in score
+    neighbor_texts = list(target_model.multilingual_neighbors(sample.text, self.neighbors))
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/models/huggingface.py", line 184, in multilingual_neighbors
+    candidates = logits[batch_index, token_index].topk(5).indices.tolist()
+KeyboardInterrupt

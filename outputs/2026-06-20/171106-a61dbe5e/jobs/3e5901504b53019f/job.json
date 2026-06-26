@@ -1,0 +1,37 @@
+{
+  "adapter_dir": "artifacts/adapters/869b6249f8356a4e",
+  "attacks": [
+    "loss",
+    "reference",
+    "zlib",
+    "min_k"
+  ],
+  "bootstrap_replicates": 1000,
+  "cache_dir": "artifacts/models",
+  "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+  "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+  "dataset": "pan17_multilingual",
+  "dependencies": [
+    "9173e6c6d105ec63"
+  ],
+  "epochs": 1,
+  "evaluation_tier": "full",
+  "evaluation_variant": "balanced_audit",
+  "job_hash": "3e5901504b53019f",
+  "load_in_4bit": false,
+  "local_files_only": true,
+  "max_length": 256,
+  "members_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/test_members.jsonl",
+  "min_cell_members": 30,
+  "model": "olmo2_1b",
+  "model_id": "allenai/OLMo-2-0425-1B",
+  "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_2/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+  "primitive_job_hash": "9173e6c6d105ec63",
+  "reference_model_id": "allenai/OLMo-2-0425-1B",
+  "seed": 29,
+  "stage": "attack_evaluation",
+  "study_name": "smoke_olmo_lora_fast",
+  "training_job_hash": "a5e051a9d4bbd3c5",
+  "training_variant": "balanced",
+  "trust_remote_code": false
+}

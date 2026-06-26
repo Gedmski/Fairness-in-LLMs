@@ -1,0 +1,20 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/179 [00:00<?, ?it/s]
+Loading weights:   1%|          | 2/179 [00:00<00:15, 11.24it/s]
+Loading weights:  21%|██        | 37/179 [00:00<00:00, 159.28it/s]
+Loading weights:  39%|███▊      | 69/179 [00:00<00:00, 220.34it/s]
+Loading weights:  56%|█████▋    | 101/179 [00:00<00:00, 254.59it/s]
+Loading weights:  73%|███████▎  | 131/179 [00:00<00:00, 267.86it/s]
+Loading weights:  89%|████████▉ | 160/179 [00:00<00:00, 271.96it/s]
+Loading weights: 100%|██████████| 179/179 [00:00<00:00, 244.42it/s]
+
+Loading weights:   0%|          | 0/179 [00:00<?, ?it/s]
+Loading weights:   1%|          | 1/179 [00:00<00:29,  6.05it/s]
+Loading weights:   8%|▊         | 14/179 [00:00<00:02, 62.76it/s]
+Loading weights:  26%|██▋       | 47/179 [00:00<00:00, 164.31it/s]
+Loading weights:  45%|████▍     | 80/179 [00:00<00:00, 215.00it/s]
+Loading weights:  62%|██████▏   | 111/179 [00:00<00:00, 244.29it/s]
+Loading weights:  77%|███████▋  | 137/179 [00:00<00:00, 249.02it/s]
+Loading weights:  94%|█████████▍| 169/179 [00:00<00:00, 266.25it/s]
+Loading weights: 100%|██████████| 179/179 [00:00<00:00, 219.14it/s]

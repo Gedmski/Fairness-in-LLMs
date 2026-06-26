@@ -1,0 +1,13 @@
+{
+  "completed": 150192,
+  "detail": "benchmark artifacts complete",
+  "elapsed_seconds": 44900.15,
+  "eta_seconds": 0.0,
+  "label": "pilot_robustness_pan18:full:d944e076",
+  "percent": 100.0,
+  "phase": "complete",
+  "rate_per_second": 3.345022,
+  "started_at": "2026-06-22T08:30:03.570863+00:00",
+  "total": 150192,
+  "updated_at": "2026-06-22T20:58:23.720499+00:00"
+}

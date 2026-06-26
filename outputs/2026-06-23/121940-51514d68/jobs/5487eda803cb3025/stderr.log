@@ -1,0 +1,67 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/398 [00:00<01:18,  5.04it/s]
+Loading weights:   1%|▏         | 5/398 [00:00<00:20, 19.05it/s]
+Loading weights:   6%|▌         | 22/398 [00:00<00:05, 72.99it/s]
+Loading weights:   9%|▉         | 36/398 [00:00<00:03, 95.47it/s]
+Loading weights:  12%|█▏        | 49/398 [00:00<00:03, 101.71it/s]
+Loading weights:  16%|█▋        | 65/398 [00:00<00:02, 119.07it/s]
+Loading weights:  20%|██        | 80/398 [00:00<00:02, 124.35it/s]
+Loading weights:  23%|██▎       | 93/398 [00:00<00:02, 122.03it/s]
+Loading weights:  27%|██▋       | 109/398 [00:01<00:02, 132.68it/s]
+Loading weights:  31%|███       | 124/398 [00:01<00:02, 133.99it/s]
+Loading weights:  35%|███▍      | 138/398 [00:01<00:01, 130.52it/s]
+Loading weights:  39%|███▊      | 154/398 [00:01<00:01, 136.86it/s]
+Loading weights:  42%|████▏     | 169/398 [00:01<00:01, 134.07it/s]
+Loading weights:  46%|████▌     | 184/398 [00:01<00:01, 137.53it/s]
+Loading weights:  50%|█████     | 199/398 [00:01<00:01, 139.90it/s]
+Loading weights:  54%|█████▍    | 214/398 [00:01<00:01, 129.79it/s]
+Loading weights:  58%|█████▊    | 230/398 [00:01<00:01, 137.92it/s]
+Loading weights:  62%|██████▏   | 245/398 [00:02<00:01, 135.80it/s]
+Loading weights:  65%|██████▌   | 259/398 [00:02<00:01, 129.51it/s]
+Loading weights:  69%|██████▊   | 273/398 [00:02<00:00, 132.01it/s]
+Loading weights:  73%|███████▎  | 289/398 [00:02<00:00, 134.57it/s]
+Loading weights:  76%|███████▌  | 303/398 [00:02<00:00, 129.65it/s]
+Loading weights:  80%|███████▉  | 317/398 [00:02<00:00, 132.05it/s]
+Loading weights:  83%|████████▎ | 332/398 [00:02<00:00, 136.94it/s]
+Loading weights:  87%|████████▋ | 346/398 [00:02<00:00, 125.00it/s]
+Loading weights:  91%|█████████ | 361/398 [00:02<00:00, 129.87it/s]
+Loading weights:  94%|█████████▍| 375/398 [00:03<00:00, 132.19it/s]
+Loading weights:  98%|█████████▊| 389/398 [00:03<00:00, 127.68it/s]
+Loading weights: 100%|██████████| 398/398 [00:03<00:00, 123.65it/s]
+
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/398 [00:00<00:52,  7.54it/s]
+Loading weights:   5%|▌         | 20/398 [00:00<00:03, 100.42it/s]
+Loading weights:  10%|▉         | 38/398 [00:00<00:02, 130.50it/s]
+Loading weights:  15%|█▌        | 60/398 [00:00<00:02, 156.58it/s]
+Loading weights:  20%|██        | 81/398 [00:00<00:01, 172.99it/s]
+Loading weights:  26%|██▌       | 103/398 [00:00<00:01, 182.05it/s]
+Loading weights:  36%|███▋      | 145/398 [00:00<00:00, 255.29it/s]
+Loading weights: 100%|██████████| 398/398 [00:00<00:00, 467.91it/s]
+Some parameters are on the meta device because they were offloaded to the cpu.
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/opt/conda/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 712, in <module>
+    raise SystemExit(main())
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 705, in main
+    execute_job_file(args.job_file, args.invocation_dir, args.gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 526, in execute_job_file
+    execute_job(job, invocation_dir, gpu_id)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/sweep.py", line 455, in execute_job
+    run_benchmark(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/cli.py", line 308, in run_benchmark
+    write_summary_csv(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/reporting.py", line 36, in write_summary_csv
+    rows = summarize_records(
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/metrics.py", line 345, in summarize_records
+    "fpr_at_90_tpr": round(fpr_at_tpr(labels, scores, 0.90), 6),
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/metrics.py", line 74, in fpr_at_tpr
+    tp, fp, _, _ = confusion(labels, scores, threshold)
+  File "/home/gabriel/Fairness-in-LLMs/src/fair_mia/metrics.py", line 85, in confusion
+    tp += 1
+KeyboardInterrupt

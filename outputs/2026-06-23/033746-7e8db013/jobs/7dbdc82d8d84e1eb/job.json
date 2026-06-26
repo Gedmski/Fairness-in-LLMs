@@ -1,0 +1,31 @@
+{
+  "adapter_dir": "artifacts/adapters/87ff6923a0cd67e3",
+  "cache_dir": "artifacts/models",
+  "dataset": "pan17_multilingual",
+  "dependencies": [
+    "79caed6463b487b2"
+  ],
+  "epochs": 1,
+  "finetuning": {
+    "alpha": 32,
+    "dropout": 0.05,
+    "gradient_accumulation_steps": 16,
+    "gradient_checkpointing": true,
+    "learning_rate": 0.0002,
+    "max_length": 256,
+    "per_device_train_batch_size": 1,
+    "rank": 16
+  },
+  "job_hash": "7dbdc82d8d84e1eb",
+  "load_in_4bit": true,
+  "max_train_samples": 512,
+  "model": "qwen3_4b",
+  "model_id": "Qwen/Qwen3-4B-Base",
+  "planned_gpu": 1,
+  "reference_model_id": "Qwen/Qwen3-4B-Base",
+  "seed": 29,
+  "stage": "training",
+  "study_name": "pilot_model_family_pan17",
+  "train_jsonl": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/train_members.jsonl",
+  "training_variant": "balanced"
+}

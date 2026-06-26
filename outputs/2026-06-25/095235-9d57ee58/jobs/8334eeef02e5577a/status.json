@@ -1,0 +1,18 @@
+{
+  "finished_at": "2026-06-25T10:30:40.642698+00:00",
+  "gpu": null,
+  "job": {
+    "dependencies": [
+      "e990d27fca627e70",
+      "b0d14342438f4ed6"
+    ],
+    "job_hash": "8334eeef02e5577a",
+    "resolved_experiment_count": 2,
+    "stage": "metrics_reporting"
+  },
+  "job_hash": "8334eeef02e5577a",
+  "stage": "metrics_reporting",
+  "started_at": "2026-06-25T10:30:40.642445+00:00",
+  "status": "success",
+  "study_name": null
+}

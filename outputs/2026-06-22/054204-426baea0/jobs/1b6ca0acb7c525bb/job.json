@@ -1,0 +1,13 @@
+{
+  "audit_cap_per_cell": 25,
+  "calibration_fraction": 0.2,
+  "dataset": "pan18_multilingual",
+  "dependencies": [],
+  "job_hash": "1b6ca0acb7c525bb",
+  "members_path": "data/pan18_multilingual/members.jsonl",
+  "nonmembers_path": "data/pan18_multilingual/nonmembers.jsonl",
+  "seed": 29,
+  "stage": "dataset_preparation",
+  "study_name": "pilot_robustness_pan18",
+  "variants_dir": "data/variants/pan18_multilingual/seed_29_audit_25"
+}

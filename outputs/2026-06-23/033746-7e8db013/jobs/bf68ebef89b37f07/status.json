@@ -1,0 +1,44 @@
+{
+  "finished_at": "2026-06-23T11:47:17.902372+00:00",
+  "gpu": 1,
+  "job": {
+    "adapter_dir": "artifacts/adapters/af55e46512f2326b",
+    "attacks": [
+      "loss",
+      "reference"
+    ],
+    "bootstrap_replicates": 100,
+    "cache_dir": "artifacts/models",
+    "calibration_members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_members.jsonl",
+    "calibration_nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/calibration_nonmembers.jsonl",
+    "dataset": "pan17_multilingual",
+    "dependencies": [
+      "6e9105feea81a21b"
+    ],
+    "epochs": 1,
+    "evaluation_tier": "full",
+    "evaluation_variant": "balanced_audit",
+    "job_hash": "bf68ebef89b37f07",
+    "load_in_4bit": false,
+    "local_files_only": true,
+    "max_length": 256,
+    "members_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_members.jsonl",
+    "min_cell_members": 30,
+    "model": "olmo2_1b",
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "nonmembers_path": "data/variants/pan17_multilingual/seed_29_audit_25/balanced/evaluation/balanced_audit/test_nonmembers.jsonl",
+    "planned_gpu": 1,
+    "reference_model_id": "allenai/OLMo-2-0425-1B",
+    "seed": 29,
+    "stage": "primitive_scoring",
+    "study_name": "pilot_model_family_pan17",
+    "training_job_hash": "6e9105feea81a21b",
+    "training_variant": "balanced",
+    "trust_remote_code": false
+  },
+  "job_hash": "bf68ebef89b37f07",
+  "stage": "primitive_scoring",
+  "started_at": "2026-06-23T09:01:25.803512+00:00",
+  "status": "success",
+  "study_name": "pilot_model_family_pan17"
+}
